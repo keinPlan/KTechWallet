@@ -42,46 +42,7 @@
           </v-btn>
         </v-toolbar>
       </v-card>
-      <v-card width="350px">
-        <v-card-title>
-          <div>
-            <h3 class="headline mb-0">PascalCoin Foundation Limited</h3>123123123-xx
-            <br>
-          </div>
-          <v-spacer/>
-          <div>
-            <v-chip class="font-weight-bold title" label>0.00000
-              <v-icon right color="accent">attach_money</v-icon>
-            </v-chip>
-          </div>
-        </v-card-title>
-
-        <v-toolbar flat>
-          <v-btn icon color="accent" v-show="false">
-            <v-icon>notification_important</v-icon>
-          </v-btn>
-          <v-btn icon color="error" v-show="false">
-            <v-icon>warning</v-icon>
-          </v-btn>
-          <v-spacer></v-spacer>
-          <v-btn icon>
-            <v-icon>delete</v-icon>
-          </v-btn>
-
-          <v-btn icon>
-            <v-icon>info</v-icon>
-          </v-btn>
-
-          <v-btn icon>
-            <v-icon>send</v-icon>
-          </v-btn>
-          <v-btn icon @click="Update" :loading="autorenew_loading">
-            <v-icon>autorenew</v-icon>
-          </v-btn>
-        </v-toolbar>
-      </v-card>
-
-      <v-btn @click="test2" block>test</v-btn>
+   
     </v-layout>
   </div>
 </template>

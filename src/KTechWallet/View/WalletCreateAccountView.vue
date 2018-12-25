@@ -114,6 +114,7 @@ export default class WalletCreateAccountView extends Vue {
 
   coinTypes = [eCoinType.PASCAL, eCoinType.ETH];
   selectedCoinType: eCoinType = eCoinType.NONE;
+  lastupdate:number =0;
 
   firstStep: boolean = false;
   secondStep: boolean = false;
@@ -170,6 +171,7 @@ export default class WalletCreateAccountView extends Vue {
         var request = await rpc
           .Execute()
           .then(v => {
+            this.lastupdate = v.updated_b;
             if (publickey.ToHexString() !== v.enc_pubkey.toLowerCase()) {
               this.ErrorMsg =
                 "PublicKey from private: " +
@@ -256,6 +258,7 @@ export default class WalletCreateAccountView extends Vue {
       this.accountNumber,
       key.keytype,
       publickey.EncodeBase58(),
+      this.lastupdate,
       KtlKeyStorage.CreateFromRawKey(key.privateKey, this.newPassword)
     );
 

@@ -1,7 +1,7 @@
 ﻿import { IKtlStorage, KtlStorageWindowLocalStorage } from './KtlStorage';
 import { KtlKeyStorage } from './KtlKeyStorage';
 import { eKeyTypes } from './KtlCrypto';
-import {  Uint8ArrayFromHex ,Uint8ArrayToHex} from './Helper';
+import { Uint8ArrayFromHex, Uint8ArrayToHex } from './Helper';
 
 
 const ACCOUNT_STORAGE_PREFIX: string = "#ACC_";
@@ -120,6 +120,7 @@ export class KtlAccountData {
         public AccountNumber: number,
         public KeyType: eKeyTypes,
         public AccountPublicKey: string,
+        public LastUpdate: number,
         public EncryptedPrivateKey: KtlKeyStorage) {
     }
 
@@ -129,6 +130,7 @@ export class KtlAccountData {
             AccountNumber: this.AccountNumber,
             KeyType: this.KeyType,
             AccountPublicKey: this.AccountPublicKey,
+            LastUpdate: this.LastUpdate,
             salt: Uint8ArrayToHex(this.EncryptedPrivateKey.salt),
             encryptedKey: Uint8ArrayToHex(this.EncryptedPrivateKey.encryptedKey),
             checkSum: this.EncryptedPrivateKey.checkSum ? Uint8ArrayToHex(this.EncryptedPrivateKey.checkSum) : "",
@@ -137,7 +139,7 @@ export class KtlAccountData {
         return JSON.stringify(temp);
     }
 
-    public static FromString(data: string) {
+    public static FromString(data: string):KtlAccountData {
         let temp: IStorageData = JSON.parse(data);
 
         return new KtlAccountData(
@@ -145,6 +147,7 @@ export class KtlAccountData {
             temp.AccountNumber,
             temp.KeyType,
             temp.AccountPublicKey,
+            temp.LastUpdate,
             new KtlKeyStorage(
                 Uint8ArrayFromHex(temp.encryptedKey),
                 Uint8ArrayFromHex(temp.salt),
@@ -159,6 +162,7 @@ interface IStorageData {
     AccountNumber: number;
     KeyType: eKeyTypes;
     AccountPublicKey: string;
+    LastUpdate: number;
     salt: string;
     encryptedKey: string;
     checkSum: string;

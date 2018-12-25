@@ -48,8 +48,10 @@ export default new VueRouter({
             components: {
                 default: WalletDetailView,
                 //navbar: NavigationBar
+            },
+            props: {
+                default: true,
             }
-
         },
         {
             path: "/wallet/send/:AccountName",

@@ -20,6 +20,7 @@ describe("KtlAccount", () => {
       555555,
       keyTyp,
       publickeyBase58,
+      0,
       KtlKeyStorage.CreateFromRawKey(Buffer.from(privatekey, "hex"), password));
 
     expect(accData.CoinType).toBe(eCoinType.PASCAL);

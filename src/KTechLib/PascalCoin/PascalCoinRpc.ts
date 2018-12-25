@@ -19,6 +19,23 @@ export abstract class RpcRequest {
 
 }
 
+export interface IGetAccountOperationsResponse {
+    block: number;
+    opblock: number;
+    optype: number;
+    time: number;
+    account: number;
+    optxt: string;
+    amount: number;
+    fee: number;
+    balance: number;
+    payload: string;
+    sender_account: number;
+    dest_account: number;
+    enc_pubkey:string;
+    ophash: string;
+    maturation:number;
+}
 
 export class GetAccountOperations extends RpcRequest {
     /*
@@ -41,13 +58,8 @@ export class GetAccountOperations extends RpcRequest {
         };
     }
 
-    protected Callback(response: any): any {
-        console.log(response);
-        return;
-    }
-    protected CallbackOnError(response: any): any {
-        console.log(response);
-        return;
+    public Execute(server:string ="http://localhost:4003"): Promise<IGetAccountOperationsResponse[]> {
+        return RpcRequest.Execute<IGetAccountOperationsResponse[]>(this,server);
     }
 }
 

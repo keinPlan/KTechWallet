@@ -28,9 +28,16 @@
         <v-icon>delete</v-icon>
       </v-btn>
 
-      <v-btn icon :to="{name:'walletdetails' ,params: { AccountName: this.AccountName } }">
-        <v-icon>info</v-icon>
-      </v-btn>
+   
+       
+        <v-btn  
+          icon
+          :to="{name:'walletdetails' ,params: { AccountName: this.AccountName } }"
+          :color="(this.accountChanged ? 'accent':'')"
+        >
+          <v-icon>{{(this.accountChanged ? 'notification_important':'info')}}</v-icon>
+        </v-btn>
+   
 
       <v-btn icon :to="{ name:'walletsend' , params: { AccountName: this.AccountName }}">
         <v-icon>send</v-icon>
@@ -54,7 +61,7 @@ import {
   KtlAccount,
   KtlStorageWindowLocalStorage,
   GetAccount,
-CalcAccountChecksum
+  CalcAccountChecksum
 } from "@/KTechLib/KTechLib";
 
 @Component({})
@@ -64,19 +71,21 @@ export default class WalletInfoCard extends Vue {
   Balance: string = "xxx.xx";
   lastupdate: string = "";
   autorenew_loading: boolean = false;
-  AccountCheckSum:number = 0;
+  AccountCheckSum: number = 0;
+  accountChanged = false;
 
   constructor() {
     super();
     console.log(this.AccountName);
     this.Account = store.AccountManager.GetAccountByName(this.AccountName);
 
-    this.AccountCheckSum = CalcAccountChecksum(this.Account!.AccountData.AccountNumber);
+    this.AccountCheckSum = CalcAccountChecksum(
+      this.Account!.AccountData.AccountNumber
+    );
   }
 
   mounted() {
     this.Update();
-
   }
 
   Update() {
@@ -90,7 +99,11 @@ export default class WalletInfoCard extends Vue {
     var getacc = new GetAccount(this.Account.AccountData.AccountNumber);
     var req = getacc
       .Execute(store.WalletConfig.RpcServer)
-      .then(value => (this.Balance = value ? value.balance.toString() : ""))
+      .then(value => {
+        this.Balance = value ? value.balance.toString() : "";
+        this.accountChanged =
+          value.updated_b !== this.Account!.AccountData.LastUpdate;          
+      })
       .catch(error => (this.Balance = error.toString()))
       .finally(() => (this.autorenew_loading = false));
   }
@@ -118,4 +131,5 @@ export default class WalletInfoCard extends Vue {
 </script>
 
 
+  
  
