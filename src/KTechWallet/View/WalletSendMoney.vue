@@ -126,7 +126,7 @@ export default class WalletSendMoney extends Vue {
       let req = new GetAccount(sender.AccountData.AccountNumber);
       let rsp: IGetAccountResponse | null = null;
       await req
-        .Execute()
+        .Execute(store.WalletConfig.RpcServer)
         .then(v => {
           rsp = v;
         })
@@ -179,7 +179,7 @@ export default class WalletSendMoney extends Vue {
 
       var sendop = new ExecuteOperations("01000000" + Uint8ArrayToHex(data));
 
-      await sendop.Execute().then(v => {
+      await sendop.Execute(store.WalletConfig.RpcServer).then(v => {
         if (v[0].valid === undefined) {
           alert("Sending was OK !!!");
         } else {
