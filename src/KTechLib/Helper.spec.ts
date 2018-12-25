@@ -1,7 +1,5 @@
 import *  as helper from "./Helper";
 
-
-
 it("BinaryReaderWriter ReadWriteByte", () => {
     let rw = new helper.BinaryReaderWriter();
     rw.AddByte(11);
