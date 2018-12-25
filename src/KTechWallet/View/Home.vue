@@ -8,7 +8,7 @@
       </v-card-title>
       <v-card-text>
         This stuff is experimental !!! <br>
-        Use a your own risk !!! <br>
+        Use at your own risk !!! <br>
         <br>
         
   
