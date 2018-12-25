@@ -39,6 +39,10 @@ export class BinaryReaderWriter {
         this.index += 4;
     }
     AddUInt64(n: number): void {
+        if (n > Number.MAX_SAFE_INTEGER) {
+            throw "number to big to handle";
+        }
+
         let nu1: number = (n / 0x100000000);
         this.view.setUint32(this.index + 4, nu1, true);
         // let nu2: number = (n & 0xffffffff);
@@ -71,6 +75,11 @@ export class BinaryReaderWriter {
     ReadUInt64(): number {
         let nu1: number = this.ReadUInt32();
         let nu2: number = this.ReadUInt32();
+      
+        if (nu2 >   0x1FFFFF) {
+            throw "number to big to handle";
+        }
+
         return nu2 * 0x100000000 + nu1;
     }
     ReadBytes(n: number): Uint8Array {
