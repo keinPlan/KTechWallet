@@ -1,17 +1,9 @@
 import Vue from "vue";
 import App from "./App.vue";
-
-
-import router from "./router";
-import store from "./store/store";
-
-
-
-
-// import "vuetify/src/stylus/main.styl";
- import "./main.styl";
-
 import Vuetify from "vuetify";
+import router from "./router";
+import "./main.styl";
+
 Vue.use(Vuetify, {
     iconfont: "md",
     theme: {
@@ -26,7 +18,6 @@ Vue.use(Vuetify, {
     },
 
 });
-
 
 let vue: Vue = new Vue({
     router,

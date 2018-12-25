@@ -1,6 +1,6 @@
 ﻿import { KtlStorageDummy } from './KtlStorage';
 import { KtlAccount, KtlAccountData, eCoinType } from './KtlAccount';
-import { KeyTypes } from './KtlCrypto';
+import { eKeyTypes } from './KtlCrypto';
 import { KtlKeyStorage } from './KtlKeyStorage';
 
 describe("KtlAccount", () => {
@@ -9,7 +9,7 @@ describe("KtlAccount", () => {
   let accData: KtlAccountData;
   let storage: KtlStorageDummy = new KtlStorageDummy();
 
-  let keyTyp = KeyTypes.SECP256K1;
+  let keyTyp = eKeyTypes.SECP256K1;
   let privatekey = "012760234450B1DAAFF23E179E59E07F4FBE30670E83ABE5794AE2EE8814CFBA";
   let publickeyBase58 = "3Ghhbojn7gpYMHxz8nyUZei6hKsdjczjqtBVC5VpUMu7snV7jDnnc1Hi4rRVKu2voKHZ52m6SYdNuixuKkyWs4NeDzWCdiD4QHyFwe";
   let password = "test123";

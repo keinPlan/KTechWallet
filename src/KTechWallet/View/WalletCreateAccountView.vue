@@ -97,7 +97,7 @@ import {
   KtlStorageDummy,
   KtlStorageWindowLocalStorage,
   eCoinType,
-  KeyTypes,
+  eKeyTypes,
   CreatePrivateKeyFromPasclWalletExport,
   GetAccount,
   PascalPublicKey,
@@ -155,7 +155,7 @@ export default class WalletCreateAccountView extends Vue {
           this.privateKeyPassword
         );
 
-        if (key.keytype === KeyTypes.INVALID) {
+        if (key.keytype === eKeyTypes.INVALID) {
           this.ErrorMsg = "Password or keydata wrong";
           return;
         }

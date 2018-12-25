@@ -1,12 +1,12 @@
 
-import { Hash, Kdf, KeyTypes, EcCrypto, Aes } from "../KtlCrypto";
+import { Hash, Kdf, eKeyTypes, EcCrypto, Aes } from "../KtlCrypto";
 import { Uint8ArrayToHex, base58, BinaryReaderWriter, Uint8ArrayFromHex } from '../Helper';
 
 export class PascalPublicKey {
     public hash: Uint8Array;
     constructor(
         public version: number,
-        public keytype: KeyTypes,
+        public keytype: eKeyTypes,
         public x: Uint8Array,
         public y: Uint8Array,
         hash?: Uint8Array,
@@ -24,7 +24,7 @@ export class PascalPublicKey {
 
         let reader = new BinaryReaderWriter(data);
         let version: number = reader.ReadByte();
-        let keytype: KeyTypes = <KeyTypes>Uint8ArrayToHex(reader.ReadBytes(2));
+        let keytype: eKeyTypes = <eKeyTypes>Uint8ArrayToHex(reader.ReadBytes(2));
         let xlen: number = reader.ReadUInt16();
         let x: Uint8Array = reader.ReadBytes(xlen);
         let ylen: number = reader.ReadUInt16();
@@ -34,7 +34,7 @@ export class PascalPublicKey {
         return new PascalPublicKey(version, keytype, x, y, hash);
     }
 
-    public static CreateFromPrivateKey(keytype: KeyTypes, privateKey: Uint8Array): PascalPublicKey {
+    public static CreateFromPrivateKey(keytype: eKeyTypes, privateKey: Uint8Array): PascalPublicKey {
         let version = 1;
         var key = EcCrypto.GetPublicKey_Raw(keytype, privateKey);
         return new PascalPublicKey(version, keytype, key.x, key.y);
@@ -59,13 +59,13 @@ export class PascalPublicKey {
         // version keytype xlen x ylen y hash
         let writer = new BinaryReaderWriter();
 
-        writer.AddByte(this.version);
+        // writer.AddByte(this.version);
         writer.AddBytes(Uint8ArrayFromHex(this.keytype.toString()));
         writer.AddUInt16(this.x.length);
         writer.AddBytes(this.x);
         writer.AddUInt16(this.y.length);
         writer.AddBytes(this.y);
-        writer.AddBytes(this.hash);
+        // writer.AddBytes(this.hash);
 
         return Uint8ArrayToHex(writer.ToArray());
     }
@@ -92,7 +92,7 @@ export class PascalPublicKey {
 
 export function CreatePrivateKeyFromPasclWalletExport(
     privateEncryptedKeyHexString: string,
-    password: string): { privateKey: Uint8Array, keytype: KeyTypes } {
+    password: string): { privateKey: Uint8Array, keytype: eKeyTypes } {
 
     let salt: Buffer | null = null;
     let passwordBuffer: Uint8Array = Buffer.from(password);
@@ -112,7 +112,7 @@ export function CreatePrivateKeyFromPasclWalletExport(
     let encData: Uint8Array = new Uint8Array( Buffer.from(privateEncryptedKeyHexString.slice(index), "hex"));
     let output: Uint8Array = Aes.Decrypt_AES_CBC_PKCS7(key.key, key.iv, encData);
 
-    let keytype: KeyTypes = <KeyTypes>Uint8ArrayToHex(output.slice(0, 2));
+    let keytype: eKeyTypes = <eKeyTypes>Uint8ArrayToHex(output.slice(0, 2));
     let privateKey: Uint8Array = output.slice(4);
     // output[2] / output[3] ==> keylen
     return { privateKey, keytype };

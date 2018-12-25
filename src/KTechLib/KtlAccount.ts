@@ -1,6 +1,6 @@
 ﻿import { IKtlStorage, KtlStorageWindowLocalStorage } from './KtlStorage';
 import { KtlKeyStorage } from './KtlKeyStorage';
-import { KeyTypes } from './KtlCrypto';
+import { eKeyTypes } from './KtlCrypto';
 import {  Uint8ArrayFromHex ,Uint8ArrayToHex} from './Helper';
 
 
@@ -64,7 +64,6 @@ export class KtlAccoutManager {
         });
 
         return data;
-        return JSON.stringify(Array.from(this.accounts.entries()), null, 2);
     }
 
     public Import(data: string): void {
@@ -119,7 +118,7 @@ export class KtlAccountData {
     constructor(
         public CoinType: eCoinType,
         public AccountNumber: number,
-        public KeyType: KeyTypes,
+        public KeyType: eKeyTypes,
         public AccountPublicKey: string,
         public EncryptedPrivateKey: KtlKeyStorage) {
     }
@@ -158,7 +157,7 @@ export class KtlAccountData {
 interface IStorageData {
     CoinType: eCoinType;
     AccountNumber: number;
-    KeyType: KeyTypes;
+    KeyType: eKeyTypes;
     AccountPublicKey: string;
     salt: string;
     encryptedKey: string;

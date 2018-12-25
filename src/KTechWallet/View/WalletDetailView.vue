@@ -54,7 +54,7 @@ import { Component, Prop, Provide, Vue } from "vue-property-decorator";
 import store from "../store/store";
 import WalletInfoCard from "@/KTechWallet/Component/WalletInfoCard.vue";
 import { eCoinType, KtlAccount } from "@/KTechLib/KtlAccount";
-import { KeyTypes } from "@/KTechLib/KtlCrypto";
+import { eKeyTypes } from "@/KTechLib/KtlCrypto";
 import { KtlKeyStorage } from "@/KTechLib/KtlKeyStorage";
 import { KtlAccountData } from "@/KTechLib/KtlAccount";
 import {

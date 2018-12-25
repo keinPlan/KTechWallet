@@ -21,7 +21,6 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { error } from "util";
 import { GetAccount } from "@/KTechLib/PascalCoin/PascalCoinRpc";
 import store from "@/KTechWallet/store/store";
 @Component

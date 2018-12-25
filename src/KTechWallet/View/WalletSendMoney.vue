@@ -77,12 +77,8 @@
 
 <script lang="ts">
 import { Component, Prop, Provide, Vue } from "vue-property-decorator";
-import PublicKeyCheck from "@/KTechWallet/Component/PublicKeyCheck.vue";
 import store from "../store/store";
-import {
-  CalcAccountChecksum,
- 
-} from "@/KTechLib/PascalCoin/PascalCoin";
+import { CalcAccountChecksum } from "@/KTechLib/PascalCoin/PascalCoin";
 import {
   GetAccount,
   IGetAccountResponse,
@@ -91,11 +87,8 @@ import {
 import { KtlAccount } from "@/KTechLib/KtlAccount";
 import { PascalCoinTransaction } from "@/KTechLib/PascalCoin/PascalCoinTransaction";
 import { EcCrypto } from "@/KTechLib/KtlCrypto";
-import { utils } from "elliptic";
-import {   Uint8ArrayFromHex, Uint8ArrayToHex } from "@/KTechLib/Helper";
+import { Uint8ArrayFromHex, Uint8ArrayToHex } from "@/KTechLib/Helper";
 import { KtlKeyStorage } from "@/KTechLib/KtlKeyStorage";
-import { encoder } from "basex-encoder";
-import { TextEncoder } from "util";
 
 @Component({})
 export default class WalletSendMoney extends Vue {
@@ -183,18 +176,16 @@ export default class WalletSendMoney extends Vue {
       );
       console.log(sig);
       var data = trans.build(sig.r, sig.s);
-  
+
       var sendop = new ExecuteOperations("01000000" + Uint8ArrayToHex(data));
 
-      await sendop
-        .Execute()
-        .then(v => {
-          if (v[0].valid === undefined){
-            alert("Sending was OK !!!");
-          }else{
-            this.Error = v[0].errors;
-          }
-        })
+      await sendop.Execute().then(v => {
+        if (v[0].valid === undefined) {
+          alert("Sending was OK !!!");
+        } else {
+          this.Error = v[0].errors;
+        }
+      });
 
       // send to rpc
     } catch (error) {

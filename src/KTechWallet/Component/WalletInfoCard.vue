@@ -50,7 +50,7 @@ import {
   KtlAccountData,
   eCoinType,
   KtlKeyStorage,
-  KeyTypes,
+  eKeyTypes,
   KtlAccount,
   KtlStorageWindowLocalStorage,
   GetAccount,

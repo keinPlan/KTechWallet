@@ -48,7 +48,12 @@
       <v-btn icon to="/">
         <v-icon>whatshot</v-icon>
       </v-btn>
-<!--
+
+      
+      <v-btn icon to="/tools">
+        <v-icon>build</v-icon>
+      </v-btn>
+      
       <v-btn icon>
         <v-icon>receipt</v-icon>
       </v-btn>
@@ -56,7 +61,7 @@
       <v-btn icon to="/contacts">
         <v-icon>account_box</v-icon>
       </v-btn>
--->
+    
       <v-btn icon to="/wallet">
         <v-icon>account_balance_wallet</v-icon>
       </v-btn>
@@ -74,8 +79,6 @@
 
 <script lang="ts">
 import { Component, Vue, Prop, Model, Emit } from "vue-property-decorator";
-import { METHODS } from "http";
-import * as pascalCoin from "@/KTechLib/PascalCoin/PascalCoin";
 import store from "./store/store";
 import { readFileSync } from "fs";
 

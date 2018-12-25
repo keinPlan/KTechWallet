@@ -1,28 +1,29 @@
 ﻿<template>
-  <md-card class="md-elevation-10">
-    <md-card-header>
-      <div class="md-title">Pascal Decoder</div>
-      <div class="md-subhead">PublicKey</div>
-    </md-card-header>
+  <v-card>
+    <v-card-title>
+      <div>Pascal PublicKey Decoder</div>
+    </v-card-title>
 
-    <md-card-content>
-      <md-field>
-        <label>Pascal PublicAddress</label>
-        <md-textarea v-model="publicKeyBase58"></md-textarea>
-      </md-field>
+    <v-card-text>
+      <v-text-field label="Pascal PublicAddress" v-model="publicKeyBase58" />
+     
+        
+     
 
-      <md-field>
-        <label>Output:</label>
-        <md-textarea v-model="output"></md-textarea>
-        <span class="md-helper-text">{{IsValid}}</span>
-      </md-field>
-    </md-card-content>
+      <v-textarea label="Output:" v-model="output">
+       
+      </v-textarea>
+          {{IsValid}} 
+    </v-card-text>
 
-    <md-card-actions>
-      <md-button class="md-accent md-elevation-1" @click="onClick">Decode</md-button>
-      <md-button class="md-accent md-elevation-1" @click="deleteResult">CLEAR</md-button>
-    </md-card-actions>
-  </md-card>
+    <v-card-actions>
+      <v-btn @click="onClick">Decode</v-btn>
+      <v-btn @click="deleteResult">CLEAR</v-btn>
+    </v-card-actions>
+
+  </v-card>
+
+   
 </template>
 
 <script lang="ts">
@@ -44,19 +45,19 @@ export default class PublicKeyCheck extends Vue {
 
     if (keydata) {
       this.output = JSON.stringify(keydata, null, 4);
-     
-     if (keydata.IsValid()) {
+
+      if (keydata.IsValid()) {
         this.IsValid = "OK";
       } else {
-          this.IsValid = "Invalid publicKey";
-      } 
-    }else{
-        this.IsValid = "Error";
+        this.IsValid = "Invalid publicKey";
+      }
+    } else {
+      this.IsValid = "Error";
     }
   }
   deleteResult() {
     this.output = "";
-    this.IsValid ="";
+    this.IsValid = "";
   }
 }
 </script>

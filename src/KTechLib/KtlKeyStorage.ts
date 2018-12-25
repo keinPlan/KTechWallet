@@ -1,4 +1,4 @@
-import { Hash, Kdf, Aes, KeyTypes, EcCrypto } from './KtlCrypto';
+import { Hash, Kdf, Aes, eKeyTypes, EcCrypto } from './KtlCrypto';
 
 export class KtlKeyStorage {
 
@@ -41,7 +41,7 @@ export class KtlKeyStorage {
         return Aes.Decrypt_AES(key, this.encryptedKey);
     }
 
-    public Sign(password: string, data: Uint8Array, keyType: KeyTypes): { r: Uint8Array, s: Uint8Array } {
+    public Sign(password: string, data: Uint8Array, keyType: eKeyTypes): { r: Uint8Array, s: Uint8Array } {
         return EcCrypto.sign(keyType, this.unPackKey(password), data);
     }
 }

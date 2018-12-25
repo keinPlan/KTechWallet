@@ -1,5 +1,5 @@
 
-import { KeyTypes } from '../KtlCrypto';
+import { eKeyTypes } from '../KtlCrypto';
 import * as helper from '../Helper';
 import { CreatePrivateKeyFromPasclWalletExport, PascalPublicKey } from './PascalCoin';
 
@@ -12,7 +12,7 @@ import { CreatePrivateKeyFromPasclWalletExport, PascalPublicKey } from './Pascal
 let Testdata =
     [
         [
-            KeyTypes.SECP256K1,
+            eKeyTypes.SECP256K1,
             "test",
             "53616C7465645F5F62ED38F8DFB821A4222E87F5F6EF2C18F1F36747FBF354CDE4DA252F170306E28DE6B97D4AA1A6D0C14FC52" +
             "F4486ECEE19956F00D4668FB3",
@@ -20,7 +20,7 @@ let Testdata =
             "3Ghhbojn7gpYMHxz8nyUZei6hKsdjczjqtBVC5VpUMu7snV7jDnnc1Hi4rRVKu2voKHZ52m6SYdNuixuKkyWs4NeDzWCdiD4QHyFwe"
         ],
         [
-            KeyTypes.SECP384R1,
+            eKeyTypes.SECP384R1,
             "test",
             "53616C7465645F5FFB2CAD97B0859201F4A61D594FF59D7143A928F56DCB319912A1799B6AEC4027A1956AF11A157D88" +
             "F17E8483D3EE6D15FB0388A4FD08DECEAC8EAE0C6F37A530615E646EFE58485C",
@@ -29,7 +29,7 @@ let Testdata =
             "ALG9KFb9umC5tDbjj5mBu2JrmLTdBwU2KJfXax32bfn6Djc5Q"
         ],
         [
-            KeyTypes.SECP521R1,
+            eKeyTypes.SECP521R1,
             "test",
             "53616C7465645F5F52BE39C494F7DA8E3623A0ACE0BD5442FDA3BB16F17D49425A72F4198040D24310602C53A5FB52004" +
             "099553267CCC949096619632A5FD6AE1710A740C1BBAED8283A83216388FE5ADCB53CCC2D7620AE705CCF887854E831",
@@ -51,7 +51,7 @@ let Testdata =
     ];
 
 describe.each(Testdata)("CheckKeyPairs %s",
-    (keytype: KeyTypes, password: string, encryptedprivatekey: string, privateKeyHexString: string, publicKeyBase58: string) => {
+    (keytype: eKeyTypes, password: string, encryptedprivatekey: string, privateKeyHexString: string, publicKeyBase58: string) => {
         privateKeyHexString = privateKeyHexString.toLowerCase();
         let pk: Uint8Array;
         it("keyIport", () => {

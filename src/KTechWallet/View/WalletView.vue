@@ -29,7 +29,7 @@ import {
   KtlAccountData,
   eCoinType,
   KtlKeyStorage,
-  KeyTypes,
+  eKeyTypes,
   KtlAccount,
   KtlStorageWindowLocalStorage
 } from "@/KTechLib/KTechLib";

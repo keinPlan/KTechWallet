@@ -1,7 +1,7 @@
 import * as mipher from "mipher";
 import * as  elliptic from "elliptic";
 
-export enum KeyTypes {
+export enum eKeyTypes {
     INVALID = "",
     SECP256K1 = "ca02", // 714
     SECP384R1 = "cb02", // 715
@@ -10,7 +10,7 @@ export enum KeyTypes {
 }
 
 export class EcCrypto {
-    public static GetPublicKey_Raw(keyType: KeyTypes, privatePoint: Uint8Array): { x: Uint8Array, y: Uint8Array } {
+    public static GetPublicKey_Raw(keyType: eKeyTypes, privatePoint: Uint8Array): { x: Uint8Array, y: Uint8Array } {
         let curve = GetCurve(keyType);
         var key = curve.keyFromPrivate(Buffer.from(privatePoint));
 
@@ -20,7 +20,7 @@ export class EcCrypto {
         return { x, y };
     }
 
-    public static sign(keyType: KeyTypes, privatePoint: Uint8Array, msg: Uint8Array): { r: Uint8Array, s: Uint8Array } {
+    public static sign(keyType: eKeyTypes, privatePoint: Uint8Array, msg: Uint8Array): { r: Uint8Array, s: Uint8Array } {
         let curve = GetCurve(keyType);
         var key = curve.keyFromPrivate(Buffer.from(privatePoint));
         var sig = key.sign(Buffer.from(msg));
@@ -28,7 +28,7 @@ export class EcCrypto {
         return { r: Uint8Array.from(sig.r.toArray()), s: Uint8Array.from(sig.s.toArray()) };
     }
 
-    public static CheckSig(keyType: KeyTypes, privatePoint: Uint8Array, data: Uint8Array, sigR: Uint8Array, sigS: Uint8Array): boolean {
+    public static CheckSig(keyType: eKeyTypes, privatePoint: Uint8Array, data: Uint8Array, sigR: Uint8Array, sigS: Uint8Array): boolean {
         let curve = GetCurve(keyType);
         var key = curve.keyFromPrivate(Buffer.from(privatePoint.buffer));
 
@@ -41,19 +41,20 @@ export class EcCrypto {
     }
 }
 
-function GetCurve(keyType: KeyTypes): elliptic.ec {
+function GetCurve(keyType: eKeyTypes): elliptic.ec {
     switch (keyType) {
-        case KeyTypes.SECP256K1:
+        case eKeyTypes.SECP256K1:
             return new elliptic.ec("secp256k1");
-            break;
-        case KeyTypes.SECT283K1:
+
+        case eKeyTypes.SECT283K1:
             throw "curve not supported"; //curve = new elliptic.ec("sect283k1");
-        case KeyTypes.SECP384R1:
+
+        case eKeyTypes.SECP384R1:
             return new elliptic.ec("p384");
-            break;
-        case KeyTypes.SECP521R1:
+
+        case eKeyTypes.SECP521R1:
             return new elliptic.ec("p521");
-            break;
+
         default:
             throw (keyType + " is not supported");
     }
