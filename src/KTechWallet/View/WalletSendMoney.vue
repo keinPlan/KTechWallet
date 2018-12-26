@@ -23,7 +23,7 @@
           </div>
         </v-card-title>
         <v-card-text>
-          <v-combobox :items="AccountNames" label="Select account "></v-combobox>
+          <!-- <v-combobox :items="AccountNames" label="Select account "></v-combobox> -->
           <v-text-field
             v-model="TargetAccountNumber"
             placeholder="xxxxxx-xx"
@@ -43,7 +43,7 @@
         <v-card-text v-show="PayloadAktivated">
           <v-radio-group v-model="PayloadFormat" @change="TogglePayload" row>
             <v-radio label="hex" value="hex"></v-radio>
-            <v-radio label="assci" value="assci"></v-radio>
+            <v-radio label="ascii" value="ascii"></v-radio>
           </v-radio-group>
           <!--       <v-switch dense label="PayloadEncryption"></v-switch>
     <v-radio-group row dense disabled>
@@ -84,6 +84,8 @@ import {
   IGetAccountResponse,
   ExecuteOperations
 } from "@/KTechLib/PascalCoin/PascalCoinRpc";
+import * as ktl from "@/KTechLib/KTechLib";
+
 import { KtlAccount } from "@/KTechLib/KtlAccount";
 import { PascalCoinTransaction } from "@/KTechLib/PascalCoin/PascalCoinTransaction";
 import { EcCrypto } from "@/KTechLib/KtlCrypto";
@@ -198,18 +200,9 @@ export default class WalletSendMoney extends Vue {
 
   TogglePayload(): void {
     if (this.PayloadFormat === "hex") {
-      var arr1 = [];
-      for (var n = 0, l = this.Payload.length; n < l; n++) {
-        var hex = Number(this.Payload.charCodeAt(n)).toString(16);
-        arr1.push(hex);
-      }
-      this.Payload = arr1.join("");
+      this.Payload = ktl.StringToHexString(this.Payload);
     } else {
-      var hex = this.Payload;
-      this.Payload = "";
-      for (var n = 0; n < hex.length; n += 2) {
-        this.Payload += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
-      }
+      this.Payload = ktl.HexStringToAsciiString(this.Payload);
     }
   }
 
@@ -217,25 +210,29 @@ export default class WalletSendMoney extends Vue {
     if (!this.PayloadAktivated) {
       return new Uint8Array(0);
     }
+    let hexString = "";
 
-    if (this.PayloadFormat === "hex") {
+    if (this.PayloadFormat !== "hex") {
+      hexString = ktl.StringToHexString(this.Payload);
+    } else {
       let len = this.Payload.length;
       this.Payload = this.Payload.replace(new RegExp("[^\\dabcdef]", "gi"), "");
       if (this.Payload.length != len) {
         throw "Some invalid characters where removed from payload Please check again !!!!";
       }
-      if (len % 2 != 0) {
-        this.Payload = "0" + this.Payload;
-      }
 
-      if (len > 255 * 2) {
-        throw "to much data in payload!!!";
-      }
-
-      return Uint8ArrayFromHex(this.Payload);
+      hexString = this.Payload;
     }
 
-    return new TextEncoder().encode(this.Payload);
+    if (hexString.length % 2 != 0) {
+      this.Payload = "0" + this.Payload;
+    }
+
+    if (hexString.length > 255 * 2) {
+      throw "to much data in payload!!!";
+    }
+
+    return Uint8ArrayFromHex(hexString);
   }
 }
 </script>

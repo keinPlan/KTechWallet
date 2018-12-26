@@ -75,8 +75,8 @@ export class BinaryReaderWriter {
     ReadUInt64(): number {
         let nu1: number = this.ReadUInt32();
         let nu2: number = this.ReadUInt32();
-      
-        if (nu2 >   0x1FFFFF) {
+
+        if (nu2 > 0x1FFFFF) {
             throw "number to big to handle";
         }
 
@@ -90,4 +90,29 @@ export class BinaryReaderWriter {
     ToArray(): Uint8Array {
         return this.buffer.slice(0, this.index);
     }
+}
+
+export function StringToHexString(str: string): string {
+    var arr1 = [];
+    for (var n = 0, l = str.length; n < l; n++) {
+        var hex = Number(str.charCodeAt(n)).toString(16);
+        if (hex.length === 1) {
+            hex = "0" + hex;
+        }
+        arr1.push(hex);
+    }
+    return arr1.join("");
+}
+
+export function HexStringToAsciiString(hex: string): string {
+    var str = "";
+
+    if (hex.length % 2 !== 0) {
+        hex = "0" + hex;
+    }
+
+    for (var n = 0; n < hex.length; n += 2) {
+        str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
+    }
+    return str;
 }
