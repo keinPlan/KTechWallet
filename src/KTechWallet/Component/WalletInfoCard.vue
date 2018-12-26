@@ -1,6 +1,6 @@
 
 <template>
-  <v-card width="350px" v-if="this.Account">
+  <v-card v-if="this.Account">
     <v-card-title>
       <div>
         <h3 class="headline mb-0">{{AccountName}}</h3>
@@ -28,21 +28,18 @@
         <v-icon>delete</v-icon>
       </v-btn>
 
-   
-       
-        <v-btn  
-          icon
-          :to="{name:'walletdetails' ,params: { AccountName: this.AccountName } }"
-          :color="(this.accountChanged ? 'accent':'')"
-        >
-          <v-icon>{{(this.accountChanged ? 'notification_important':'info')}}</v-icon>
-        </v-btn>
-   
+      <v-btn
+        icon
+        :to="{name:'walletdetails' ,params: { AccountName: this.AccountName } }"
+        :color="(this.accountChanged ? 'accent':'')"
+      >
+        <v-icon>{{(this.accountChanged ? 'notification_important':'info')}}</v-icon>
+      </v-btn>
 
       <v-btn icon :to="{ name:'walletsend' , params: { AccountName: this.AccountName }}">
         <v-icon>send</v-icon>
       </v-btn>
-      <v-btn icon @click="Update" :loading="autorenew_loading">
+      <v-btn icon @click="Update(true)" :loading="autorenew_loading">
         <v-icon>autorenew</v-icon>
       </v-btn>
     </v-toolbar>
@@ -60,7 +57,6 @@ import {
   eKeyTypes,
   KtlAccount,
   KtlStorageWindowLocalStorage,
-  GetAccount,
   CalcAccountChecksum
 } from "@/KTechLib/KTechLib";
 
@@ -88,7 +84,7 @@ export default class WalletInfoCard extends Vue {
     this.Update();
   }
 
-  Update() {
+  Update( forceUpdate=false) {
     if (!this.Account) {
       return;
     }
@@ -96,13 +92,11 @@ export default class WalletInfoCard extends Vue {
     this.Account.AccountData.AccountPublicKey;
     this.Balance = "???.??";
 
-    var getacc = new GetAccount(this.Account.AccountData.AccountNumber);
-    var req = getacc
-      .Execute(store.WalletConfig.RpcServer)
+    var req = store.DataProvider.GetAccountInfo(this.Account.AccountData.AccountNumber,forceUpdate) 
       .then(value => {
         this.Balance = value ? value.balance.toString() : "";
         this.accountChanged =
-          value.updated_b !== this.Account!.AccountData.LastUpdate;          
+          value.updated_b !== this.Account!.AccountData.LastUpdate;
       })
       .catch(error => (this.Balance = error.toString()))
       .finally(() => (this.autorenew_loading = false));

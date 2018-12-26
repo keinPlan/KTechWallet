@@ -5,25 +5,17 @@
     </v-card-title>
 
     <v-card-text>
-      <v-text-field label="Pascal PublicAddress" v-model="publicKeyBase58" />
-     
-        
-     
+      <v-text-field label="Pascal PublicAddress" v-model="publicKeyBase58"/>
 
-      <v-textarea label="Output:" v-model="output">
-       
-      </v-textarea>
-          {{IsValid}} 
+      <v-textarea label="Output:" v-model="output"></v-textarea>
+      {{IsValid}}
     </v-card-text>
 
     <v-card-actions>
       <v-btn @click="onClick">Decode</v-btn>
       <v-btn @click="deleteResult">CLEAR</v-btn>
     </v-card-actions>
-
   </v-card>
-
-   
 </template>
 
 <script lang="ts">
