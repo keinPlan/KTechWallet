@@ -93,7 +93,7 @@ import { readFileSync } from "fs";
 @Component
 export default class App extends Vue {
   drawer: boolean = false;
-  dark:boolean = false;
+  dark:boolean = true;
 
   mounted() {
   }
