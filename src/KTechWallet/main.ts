@@ -7,7 +7,7 @@ import "./main.styl";
 Vue.use(Vuetify, {
     iconfont: "md",
     theme: {
-        background:"#c0c0c0",
+        background: "#cfcfc0",
         primary: "#607D8B",
         secondary: "#FF8F00",
         accent: "#FF6D00",
@@ -16,7 +16,6 @@ Vue.use(Vuetify, {
         info: "#2196f3",
         success: "#4caf50"
     },
-
 });
 
 let vue: Vue = new Vue({

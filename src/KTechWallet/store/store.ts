@@ -8,13 +8,11 @@ export class Config {
     var storage = new KtlStorageWindowLocalStorage();
     var serveraddress = storage.Load(this.storageKey);
 
-    if (serveraddress === null) {
-      this.RpcServer = "https://keinplan1337.ddns.net:1600";
-    } else {
+    if (serveraddress !== null) {
       this.RpcServer = serveraddress;
     }
-
   }
+
   public RpcServer: string = "https://keinplan1337.ddns.net:1600";
 
   public SetRpcServer(serveraddress: string): void {

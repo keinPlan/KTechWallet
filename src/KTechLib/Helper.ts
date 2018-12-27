@@ -1,5 +1,5 @@
 import { IBaseXEncoder, encoder } from "basex-encoder";
-import * as mipher from 'mipher';
+import * as mipher from "mipher";
 
 export const base58: IBaseXEncoder = encoder("123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz");
 
@@ -93,9 +93,9 @@ export class BinaryReaderWriter {
 }
 
 export function StringToHexString(str: string): string {
-    var arr1 = [];
-    for (var n = 0, l = str.length; n < l; n++) {
-        var hex = Number(str.charCodeAt(n)).toString(16);
+    var arr1:string[] = [];
+    for (var n:number = 0, l:number = str.length; n < l; n++) {
+        var hex:string = Number(str.charCodeAt(n)).toString(16);
         if (hex.length === 1) {
             hex = "0" + hex;
         }
@@ -105,13 +105,13 @@ export function StringToHexString(str: string): string {
 }
 
 export function HexStringToAsciiString(hex: string): string {
-    var str = "";
+    var str:string = "";
 
     if (hex.length % 2 !== 0) {
         hex = "0" + hex;
     }
 
-    for (var n = 0; n < hex.length; n += 2) {
+    for (var n:number = 0; n < hex.length; n += 2) {
         str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
     }
     return str;
