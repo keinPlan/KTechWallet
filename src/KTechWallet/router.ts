@@ -65,6 +65,15 @@ export default new VueRouter({
             }
         },
         {
+            path: "/wallet/send/",
+            name: "walletsend",
+            components: {
+                default: WalletSendMoney,
+                //navbar: NavigationBar
+            }
+         
+        },
+        {
             path: "/wallet/createaccount",
             name: "walletcreateaccount",
             components: {

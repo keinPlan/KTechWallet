@@ -59,18 +59,22 @@
         </v-card-text>
       </v-card>
     </v-flex>
-    <v-flex xs11>
-      <v-text-field
-        outline
-        v-model="Password"
-        label="Password"
-        :type="showPassword ? 'text' : 'password'"
-        :append-icon="showPassword ? 'visibility_off' : 'visibility'"
-        @click:append="showPassword = !showPassword"
-        required
-      />
-      <v-alert :value="this.Error.length > 0" type="error">{{Error}}</v-alert>
-      <v-btn block color="accent" :loading="Processing" @click="OnSend">Send</v-btn>
+    <v-flex xs12>
+      <v-card>
+        <v-card-text>
+          <v-text-field
+            outline
+            v-model="Password"
+            label="Password"
+            :type="showPassword ? 'text' : 'password'"
+            :append-icon="showPassword ? 'visibility_off' : 'visibility'"
+            @click:append="showPassword = !showPassword"
+            required
+          />
+          <v-alert :value="this.Error.length > 0" type="error">{{Error}}</v-alert>
+          <v-btn block color="accent" :loading="Processing" @click="OnSend">Send</v-btn>
+        </v-card-text>
+      </v-card>
     </v-flex>
   </v-layout>
 </template>
@@ -108,8 +112,27 @@ export default class WalletSendMoney extends Vue {
   Error: string = "";
   Processing: boolean = false;
 
-  constructor() {
-    super();
+  mounted() {
+    if (this.$route.query) {
+      let target = this.$route.query["target"] as string;
+      this.TargetAccountNumber = target;
+
+      let amount = Number.parseFloat(this.$route.query["amount"] as string);
+      this.Amount = amount;
+
+      let payloadType = this.$route.query["payloadType"] as string;
+      let payload = this.$route.query["payload"] as string;
+
+      if (payload) {
+        this.Payload = payload;
+        this.PayloadAktivated = true;
+        this.PayloadFormat = "hex";
+        if (payloadType === "ascii") {
+          this.PayloadFormat = "ascii";
+          this.TogglePayload();
+        }
+      }
+    }
   }
 
   async OnSend() {
@@ -119,6 +142,10 @@ export default class WalletSendMoney extends Vue {
       this.Processing = true;
 
       let sender = store.AccountManager.GetAccountByName(this.AccountName);
+      if (this.Amount < 0.0001) {
+        this.Error = "min amount to send 0.0001";
+        return;
+      }
 
       if (sender == null) {
         this.Error = "No Wallet found with name: " + this.AccountName;

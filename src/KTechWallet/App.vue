@@ -49,19 +49,14 @@
         <v-icon>whatshot</v-icon>
       </v-btn>
 
-      
       <v-btn icon to="/tools">
         <v-icon>build</v-icon>
-      </v-btn>
-      
-      <v-btn icon>
-        <v-icon>receipt</v-icon>
       </v-btn>
 
       <v-btn icon to="/contacts">
         <v-icon>account_box</v-icon>
       </v-btn>
-    
+
       <v-btn icon to="/wallet">
         <v-icon>account_balance_wallet</v-icon>
       </v-btn>

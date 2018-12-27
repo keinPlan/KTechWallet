@@ -26,8 +26,7 @@
       <v-text-field
         label="KeyType:"
         :value="this.Account.AccountData.KeyType"
-        disabled
-        type="Number"
+        disabled      
       />
 
       <v-textarea
