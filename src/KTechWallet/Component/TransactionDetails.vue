@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-text>
+    <v-card-media>
       
       <!-- payload -->
       <div v-if="AccountOperation.payload.length">
@@ -33,7 +33,7 @@
           :rows="rawOperationDataLines"
         />
       </div>
-    </v-card-text>
+    </v-card-media>
   </v-card>
 </template>
 
