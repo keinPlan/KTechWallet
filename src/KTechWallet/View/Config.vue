@@ -21,7 +21,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import { GetAccount } from "@/KTechLib/PascalCoin/PascalCoinRpc";
+import { RpcGetAccount } from "@/KTechLib/PascalCoin/PascalCoinRpc";
 import store from "@/KTechWallet/store/store";
 @Component
 export default class Config extends Vue {
@@ -36,7 +36,7 @@ export default class Config extends Vue {
   }
 
   async Test() {
-    var getacc = new GetAccount(1);
+    var getacc = new RpcGetAccount(1);
     await getacc
       .Execute(this.RpcServer)
       .then(data => (data ? alert("ok") : alert("failed")))

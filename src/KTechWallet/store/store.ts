@@ -1,4 +1,11 @@
-import { KtlAccoutManager, KtlStorageWindowLocalStorage, GetAccount, IGetAccountResponse, GetAccountOperations, IGetAccountOperationsResponse } from "@/KTechLib/KTechLib";
+import {
+  KtlAccoutManager,
+  KtlStorageWindowLocalStorage,
+  RpcGetAccount,
+  IGetAccountResponse,
+  RpcGetAccountOperations,
+  IGetAccountOperationsResponse
+} from "@/KTechLib/KTechLib";
 
 
 
@@ -36,7 +43,7 @@ export class DataProvider {
     let now: number = Date.now();
 
     if (forceUpdate || !lastUpdate || (lastUpdate + 5 * 60 * 1000) < now) {
-      var getacc: GetAccount = new GetAccount(accountNumber);
+      var getacc: RpcGetAccount = new RpcGetAccount(accountNumber);
 
       var req = getacc.Execute(this.WalletConfig.RpcServer);
       req.then(value => {
@@ -63,7 +70,7 @@ export class DataProvider {
     if (forceUpdate || !lastUpdate || (lastUpdate + 5 * 60 * 1000) < now) {
 
 
-      let cmd = new GetAccountOperations(
+      let cmd = new RpcGetAccountOperations(
         accountNumber,
         100,
         -1 // -1 for pending

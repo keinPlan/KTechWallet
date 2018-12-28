@@ -9,14 +9,13 @@
         </v-btn>
       </v-toolbar>
     </v-card-media>
-    
+
     <v-card-media>
       <v-alert :value="this.Error.length > 0" type="error">{{this.Error}}</v-alert>
       <v-expansion-panel focusable>
         <v-expansion-panel-content v-for="trans in this.Operations" :key="trans.ophash">
           <div slot="header">
             <v-icon v-if="trans.block > AccountLastUpdatedAtBlock" large color="warning">fiber_new</v-icon>
-
             <v-icon large :color="GetIconColor(trans)">{{GetIcon(trans)}}</v-icon>
             {{trans.block}} {{trans.optxt}}
           </div>

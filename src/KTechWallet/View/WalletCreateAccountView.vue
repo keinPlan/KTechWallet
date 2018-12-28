@@ -99,7 +99,7 @@ import {
   eCoinType,
   eKeyTypes,
   CreatePrivateKeyFromPasclWalletExport,
-  GetAccount,
+  RpcGetAccount,
   PascalPublicKey,
   KtlAccountData,
   KtlKeyStorage,
@@ -166,7 +166,7 @@ export default class WalletCreateAccountView extends Vue {
           key.privateKey
         );
 
-        var rpc = new GetAccount(this.accountNumber);
+        var rpc = new RpcGetAccount(this.accountNumber);
         let result: boolean = false;
         var request = await rpc
           .Execute()

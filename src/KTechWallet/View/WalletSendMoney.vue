@@ -84,14 +84,14 @@ import { Component, Prop, Provide, Vue } from "vue-property-decorator";
 import store from "../store/store";
 import { CalcAccountChecksum } from "@/KTechLib/PascalCoin/PascalCoin";
 import {
-  GetAccount,
-  IGetAccountResponse,
-  ExecuteOperations
+  RpcGetAccount,
+  RpcExecuteOperations,
+  IGetAccountResponse
 } from "@/KTechLib/PascalCoin/PascalCoinRpc";
 import * as ktl from "@/KTechLib/KTechLib";
 
 import { KtlAccount } from "@/KTechLib/KtlAccount";
-import { PascalCoinTransaction } from "@/KTechLib/PascalCoin/PascalCoinTransaction";
+import { PascalCoinOpTransferMoney } from "@/KTechLib/PascalCoin/PascalCoinTransaction";
 import { EcCrypto } from "@/KTechLib/KtlCrypto";
 import { Uint8ArrayFromHex, Uint8ArrayToHex } from "@/KTechLib/Helper";
 import { KtlKeyStorage } from "@/KTechLib/KtlKeyStorage";
@@ -152,7 +152,7 @@ export default class WalletSendMoney extends Vue {
         return;
       }
 
-      let req = new GetAccount(sender.AccountData.AccountNumber);
+      let req = new RpcGetAccount(sender.AccountData.AccountNumber);
       let rsp: IGetAccountResponse | null = null;
       await req
         .Execute(store.WalletConfig.RpcServer)
@@ -187,7 +187,7 @@ export default class WalletSendMoney extends Vue {
       }
 
       // build transaction
-      var trans = new PascalCoinTransaction(     
+      var trans = new PascalCoinOpTransferMoney(
         sender.AccountData.AccountNumber,
         rsp!.n_operation + 1,
         this.Amount * 10000,
@@ -203,9 +203,11 @@ export default class WalletSendMoney extends Vue {
         sender.AccountData.KeyType
       );
       console.log(sig);
-      var data = trans.build(sig.r, sig.s);
+      var data = trans.ToArray(sig.r, sig.s);
 
-      var sendop = new ExecuteOperations("01000000" + Uint8ArrayToHex(data));
+      var sendop = new RpcExecuteOperations(
+        "01000000" + Uint8ArrayToHex(data)
+      );
 
       await sendop.Execute(store.WalletConfig.RpcServer).then(v => {
         if (v[0].valid === undefined) {

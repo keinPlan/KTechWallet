@@ -12,9 +12,11 @@ export function Uint8ArrayFromHex(data: string): Uint8Array {
 }
 
 export class BinaryReaderWriter {
+
     public index: number = 0;
     public view: DataView;
     public buffer: Uint8Array;
+
     constructor(buffer?: Uint8Array) {
         if (!buffer) {
             this.buffer = new Uint8Array(512);
@@ -25,10 +27,12 @@ export class BinaryReaderWriter {
         this.view = new DataView(this.buffer.buffer);
         return;
     }
+
     AddByte(n: number): void {
         this.view.setUint8(this.index, n);
         this.index += 1;
     }
+
     AddUInt16(n: number): void {
         this.view.setUint16(this.index, n, true);
         this.index += 2;
@@ -38,6 +42,7 @@ export class BinaryReaderWriter {
         this.view.setUint32(this.index, n, true);
         this.index += 4;
     }
+
     AddUInt64(n: number): void {
         if (n > Number.MAX_SAFE_INTEGER) {
             throw "number to big to handle";
@@ -50,6 +55,7 @@ export class BinaryReaderWriter {
 
         this.index += 8;
     }
+
     AddBytes(bytes: Uint8Array): void {
 
         let i: number = 0;
@@ -60,9 +66,11 @@ export class BinaryReaderWriter {
             this.view.setUint8(this.index++, bytes[i]);
         }
     }
+
     ReadByte(): number {
         return this.view.getUint8(this.index++);
     }
+
     ReadUInt16(): number {
         this.index += 2;
         return this.view.getUint16(this.index - 2, true);
@@ -72,6 +80,7 @@ export class BinaryReaderWriter {
         this.index += 4;
         return this.view.getUint32(this.index - 4, true);
     }
+
     ReadUInt64(): number {
         let nu1: number = this.ReadUInt32();
         let nu2: number = this.ReadUInt32();
@@ -82,6 +91,7 @@ export class BinaryReaderWriter {
 
         return nu2 * 0x100000000 + nu1;
     }
+
     ReadBytes(n: number): Uint8Array {
         this.index += n;
         return new Uint8Array(this.view.buffer.slice(this.index - n, this.index));
@@ -93,9 +103,9 @@ export class BinaryReaderWriter {
 }
 
 export function StringToHexString(str: string): string {
-    var arr1:string[] = [];
-    for (var n:number = 0, l:number = str.length; n < l; n++) {
-        var hex:string = Number(str.charCodeAt(n)).toString(16);
+    var arr1: string[] = [];
+    for (var n: number = 0, l: number = str.length; n < l; n++) {
+        var hex: string = Number(str.charCodeAt(n)).toString(16);
         if (hex.length === 1) {
             hex = "0" + hex;
         }
@@ -105,13 +115,13 @@ export function StringToHexString(str: string): string {
 }
 
 export function HexStringToAsciiString(hex: string): string {
-    var str:string = "";
+    var str: string = "";
 
     if (hex.length % 2 !== 0) {
         hex = "0" + hex;
     }
 
-    for (var n:number = 0; n < hex.length; n += 2) {
+    for (var n: number = 0; n < hex.length; n += 2) {
         str += String.fromCharCode(parseInt(hex.substr(n, 2), 16));
     }
     return str;

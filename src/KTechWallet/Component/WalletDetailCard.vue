@@ -95,8 +95,7 @@ import {
   KtlKeyStorage,
   eKeyTypes,
   KtlAccount,
-  KtlStorageWindowLocalStorage,
-  GetAccount,
+  KtlStorageWindowLocalStorage, 
   CalcAccountChecksum
 } from "@/KTechLib/KTechLib";
 
