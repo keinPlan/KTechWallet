@@ -68,7 +68,7 @@ export default class Tools extends Vue {
     let x12: number = br.ReadUInt16(); // s
     let x13 = br.ReadBytes(x12);
 
-    let ttt = new PascalCoinTransaction(x2, x3, x4, x6, x7, x9, x5);
+    let ttt = new PascalCoinTransaction( x3, x4, x6, x7, x9, x5);
     console.log(ttt);
     let hash = ttt.BuildOpHash();
 
@@ -125,7 +125,7 @@ export default class Tools extends Vue {
     let x12: number = br.ReadUInt16(); // s
     let x13 = br.ReadBytes(x12);
 
-    let ttt = new PascalCoinTransaction(x2, x3, x4, x6, x7, x9, x5);
+    let ttt = new PascalCoinTransaction( x3, x4, x6, x7, x9, x5);
     console.log(ttt);
     let hash = ttt.BuildOpHash();
 

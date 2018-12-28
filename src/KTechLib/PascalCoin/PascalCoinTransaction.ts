@@ -5,15 +5,14 @@ import { Hash } from '../KtlCrypto';
 
 
 export class PascalCoinTransaction {
+    public optype: number=1;
     constructor(
-        public optype: number,
         public sender: number,
         public opcounter: number,
         public amount: number,
         public fee: number,
         public payload: Uint8Array,
         public target: number,
-
     ) {
     }
 

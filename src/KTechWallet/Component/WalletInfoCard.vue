@@ -84,7 +84,7 @@ export default class WalletInfoCard extends Vue {
     this.Update();
   }
 
-  Update( forceUpdate=false) {
+  Update(forceUpdate = false) {
     if (!this.Account) {
       return;
     }
@@ -92,7 +92,10 @@ export default class WalletInfoCard extends Vue {
     this.Account.AccountData.AccountPublicKey;
     this.Balance = "???.??";
 
-    var req = store.DataProvider.GetAccountInfo(this.Account.AccountData.AccountNumber,forceUpdate) 
+    var req = store.DataProvider.GetAccountInfo(
+      this.Account.AccountData.AccountNumber,
+      forceUpdate
+    )
       .then(value => {
         this.Balance = value ? value.balance.toString() : "";
         this.accountChanged =

@@ -1,17 +1,19 @@
 
 <template>
   <v-card>
-    <v-card-actions color="primary">
-      <div>
-        <h2>Account: {{this.AccountName}}</h2>
-        {{this.Balance}}
-        <v-icon small>attach_money</v-icon>
-      </div>
-      <v-spacer/>
-      <v-btn color="accent" icon @click="ShowAccountsDetails=!ShowAccountsDetails">
-        <v-icon>{{ShowAccountsDetails ? 'visibility' : 'visibility_off'}}</v-icon>
-      </v-btn>
-    </v-card-actions>
+    <v-card-media color="primary">
+      <v-toolbar>
+        <div>
+          <h2>Account: {{this.AccountName}}</h2>
+          {{this.Balance}}
+          <v-icon small>attach_money</v-icon>
+        </div>
+        <v-spacer/>
+        <v-btn color="accent" icon @click="ShowAccountsDetails=!ShowAccountsDetails">
+          <v-icon>{{ShowAccountsDetails ? 'visibility' : 'visibility_off'}}</v-icon>
+        </v-btn>
+      </v-toolbar>
+    </v-card-media>
 
     <v-card-text v-show="ShowAccountsDetails">
       <v-text-field label="AccountName:" :value="AccountName" disabled/>
@@ -23,11 +25,7 @@
         type="Number"
       />
 
-      <v-text-field
-        label="KeyType:"
-        :value="this.Account.AccountData.KeyType"
-        disabled      
-      />
+      <v-text-field label="KeyType:" :value="this.Account.AccountData.KeyType" disabled/>
 
       <v-textarea
         label="AccountPublicKey:"

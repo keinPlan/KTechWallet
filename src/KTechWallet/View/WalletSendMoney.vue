@@ -187,8 +187,7 @@ export default class WalletSendMoney extends Vue {
       }
 
       // build transaction
-      var trans = new PascalCoinTransaction(
-        1,
+      var trans = new PascalCoinTransaction(     
         sender.AccountData.AccountNumber,
         rsp!.n_operation + 1,
         this.Amount * 10000,

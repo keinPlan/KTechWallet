@@ -1,12 +1,15 @@
 <template>
-  <v-card >
-    <v-card-actions ><h2>TransactionHistoy</h2>
-      <v-spacer/>
-      <v-btn color="accent" icon @click="Update(true)" :loading="Loading">
-        <v-icon >autorenew</v-icon>
-      </v-btn>
-    </v-card-actions>
-
+  <v-card>
+    <v-card-media>
+      <v-toolbar>
+        <h2>TransactionHistoy</h2>
+        <v-spacer/>
+        <v-btn color="accent" icon @click="Update(true)" :loading="Loading">
+          <v-icon>autorenew</v-icon>
+        </v-btn>
+      </v-toolbar>
+    </v-card-media>
+    
     <v-card-media>
       <v-alert :value="this.Error.length > 0" type="error">{{this.Error}}</v-alert>
       <v-expansion-panel focusable>
@@ -17,20 +20,8 @@
             <v-icon large :color="GetIconColor(trans)">{{GetIcon(trans)}}</v-icon>
             {{trans.block}} {{trans.optxt}}
           </div>
-          <v-card>
-            <v-card-text>
-              Block: {{trans.block}}
-              <br>
-              maturation: {{trans.maturation}}
-              <br>
-              amount: {{trans.amount}}
-              <br>
-              fee: {{trans.fee}}
-              <br>
-              payload: {{trans.payload}}
-              <br>
-            </v-card-text>
-          </v-card>
+
+          <TransactionDetails v-bind:AccountOperation="trans"/>
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-card-media>
@@ -43,8 +34,11 @@
 import { Component, Prop, Provide, Vue, Model } from "vue-property-decorator";
 import store from "../store/store";
 import * as ktl from "@/KtechLib/KtechLib";
+import TransactionDetails from "@/KTechWallet/Component/TransactionDetails.vue";
 
-@Component
+@Component({
+  components: { TransactionDetails }
+})
 export default class TransactionHistoy extends Vue {
   @Prop() AccountName!: string;
   Operations!: ktl.IGetAccountOperationsResponse[];
