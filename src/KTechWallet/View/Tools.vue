@@ -9,13 +9,15 @@
 import { Component, Prop, Provide, Vue } from "vue-property-decorator";
 import PublicKeyCheck from "@/KTechWallet/Component/PublicKeyCheck.vue";
 import store from "../store/store";
-
+import * as ktl from "@/KTechLib/KTechLib";
+import { Uint8ArrayFromHex } from "@/KTechLib/KTechLib";
 
 @Component({
   components: { PublicKeyCheck }
 })
-export default class Tools extends Vue { 
-  async test10() {  
+export default class Tools extends Vue {
+  async test10() {
+
   }
 }
 </script>

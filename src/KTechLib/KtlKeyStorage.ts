@@ -9,7 +9,7 @@ export class KtlKeyStorage {
 
         if (checkSum) {
             var temp = this.CalcCheckSum();
- 
+
             for (let index: number = 0; index < checkSum.length; index++) {
                 if (temp[index] !== checkSum[index]) {
                     throw "Key corrupted !!!";
@@ -43,5 +43,9 @@ export class KtlKeyStorage {
 
     public Sign(password: string, data: Uint8Array, keyType: eKeyTypes): { r: Uint8Array, s: Uint8Array } {
         return EcCrypto.sign(keyType, this.unPackKey(password), data);
+    }
+
+    public ECDHDecrypt(keyType: eKeyTypes, password: string, data: Uint8Array, publicKey: Uint8Array): Uint8Array {
+        return EcCrypto.ECDHDecrypt(keyType, this.unPackKey(password), publicKey, data);
     }
 }

@@ -1,6 +1,7 @@
 import * as mipher from "mipher";
 import * as  elliptic from "elliptic";
 
+
 export enum eKeyTypes {
     INVALID = "",
     SECP256K1 = "ca02", // 714
@@ -30,14 +31,41 @@ export class EcCrypto {
 
     public static CheckSig(keyType: eKeyTypes, privatePoint: Uint8Array, data: Uint8Array, sigR: Uint8Array, sigS: Uint8Array): boolean {
         let curve = GetCurve(keyType);
-        var key = curve.keyFromPrivate(Buffer.from(privatePoint.buffer));
+        var key = curve.keyFromPrivate(Buffer.from(privatePoint));
 
         var sig: any = {
             r: Buffer.from(sigR.buffer),
             s: Buffer.from(sigS.buffer)
         };
-        console.log(sig);
+
         return key.verify(Buffer.from(data.buffer), sig);
+    }
+ 
+    public static ECDHDecrypt(keyType: eKeyTypes, privatePoint: Uint8Array, publickey: Uint8Array, msg: Uint8Array):
+        Uint8Array {
+        let curve = GetCurve(keyType);
+        var privateKey = curve.keyFromPrivate(Buffer.from(privatePoint));
+        var pubkey = curve.keyFromPublic(Buffer.from(publickey));
+        let sharedSecret = privateKey.derive(pubkey.getPublic());
+        let secrectkey = Hash.SHA512(sharedSecret.toArray());
+        let decryptedData = Aes.Decrypt_AES_CBC_PKCS7(secrectkey.slice(0, 32), new Uint8Array(16), msg);
+        return decryptedData;
+    }
+
+    public static ECDHEncrypt(keyType: eKeyTypes, publickey: Uint8Array, msg: Uint8Array):
+        {
+            data:Uint8Array,
+            publicKey : string
+        } {
+        let curve = GetCurve(keyType);
+        let tempKey = curve.genKeyPair();
+        var pubkey = curve.keyFromPublic(Buffer.from(publickey));
+        let sharedSecret = tempKey.derive(pubkey.getPublic());
+        let secrectkey = Hash.SHA512(sharedSecret.toArray());
+
+        let encryptedData = Aes.Encrypt_AES_CBC_PKCS7(secrectkey.slice(0, 32), new Uint8Array(16), msg);
+
+        return {data:encryptedData ,publicKey:tempKey.getPublic(true,"hex")};
     }
 }
 
@@ -108,9 +136,7 @@ export class Kdf {
         //iv = sha256 (KEY + password + salt);
         let iv = Hash.SHA256(key, password, salt);
         return { key, iv };
-        mipher.Convert.bin2hex
     }
-
 }
 
 

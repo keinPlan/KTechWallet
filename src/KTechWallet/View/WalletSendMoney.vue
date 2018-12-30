@@ -9,8 +9,10 @@
         </v-card-title>
         <v-card-text>
           <v-select v-model="AccountName" :items="AccountNames" box label="Sender"></v-select>
-          <v-text-field v-model="Amount" label="Amount" type="number" prefix="$" required/>
-          <v-text-field v-model="Fee" label="Fee" type="number" prefix="$" required/>
+          <v-layout row wrap>
+            <v-text-field v-model="Amount" label="Amount" type="number" prefix="$" required/>
+            <v-text-field v-model="Fee" label="Fee" type="number" prefix="$" required/>
+          </v-layout>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -24,12 +26,24 @@
         </v-card-title>
         <v-card-text>
           <!-- <v-combobox :items="AccountNames" label="Select account "></v-combobox> -->
-          <v-text-field
-            v-model="TargetAccountNumber"
-            placeholder="xxxxxx-xx"
-            label="account number"
-            required
-          />
+          <v-layout row wrap>
+            <v-text-field
+              v-model="TargetAccountNumber"
+              type="number"
+              label="account number"
+              placeholder="xxxxxxxx"
+              required
+            />
+            <v-text-field
+              style="width:50px"
+              v-model="TargetAccountNumberCheckSum"
+              placeholder="xx"
+              label="CheckSum"
+              type="number"
+              mask="##"
+              required
+            />
+          </v-layout>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -41,21 +55,18 @@
         </v-card-title>
 
         <v-card-text v-show="PayloadAktivated">
-          <v-radio-group v-model="PayloadFormat" @change="TogglePayload" row>
+          <v-radio-group v-model="PayloadFormat" @change="TogglePayload" row label="PayloadFromat:">
             <v-radio label="hex" value="hex"></v-radio>
             <v-radio label="ascii" value="ascii"></v-radio>
           </v-radio-group>
-          <!--       <v-switch dense label="PayloadEncryption"></v-switch>
-    <v-radio-group row dense disabled>
-            <v-radio label="TargetPublicKey" value="2"></v-radio>
-            <v-radio label="Password" value="3"></v-radio>
-          </v-radio-group>-->
-          <v-textarea
-            box
-            label="Payload"
-            v-model="Payload"
-            :counter="PayloadFormat =='hex' ? 255*2:255 "
-          ></v-textarea>
+
+          <v-radio-group row dense v-model="PayloadEncryption" label="PayloadEncryption:">
+            <v-radio label="None" value="None"></v-radio>
+            <v-radio label="KTECH_TARGETPUBLICKEY" value="KTECH_TARGETPUBLICKEY"></v-radio>
+            <!--  <v-radio label="Password" value="3"></v-radio> -->
+          </v-radio-group>
+
+          <v-textarea box label="Payload" v-model="Payload" :counter="PayloadMaxSize"></v-textarea>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -92,9 +103,15 @@ import * as ktl from "@/KTechLib/KTechLib";
 
 import { KtlAccount } from "@/KTechLib/KtlAccount";
 import { PascalCoinOpTransferMoney } from "@/KTechLib/PascalCoin/PascalCoinTransaction";
-import { EcCrypto } from "@/KTechLib/KtlCrypto";
-import { Uint8ArrayFromHex, Uint8ArrayToHex } from "@/KTechLib/Helper";
+import { EcCrypto, eKeyTypes } from "@/KTechLib/KtlCrypto";
+import {
+  Uint8ArrayFromHex,
+  Uint8ArrayToHex,
+  BinaryReaderWriter
+} from "@/KTechLib/Helper";
 import { KtlKeyStorage } from "@/KTechLib/KtlKeyStorage";
+import { promises } from "fs";
+import { throws } from "assert";
 
 @Component({})
 export default class WalletSendMoney extends Vue {
@@ -102,11 +119,14 @@ export default class WalletSendMoney extends Vue {
   AccountNames: Array<string> = store.AccountManager.GetAccountNames();
   PayloadAktivated: boolean = false;
   PayloadFormat: string = "hex";
+  PayloadEncryption: string = "None";
+  PayloadMaxSize: number = 255 * 2;
   @Prop() AccountName!: string;
 
   Amount: number = 0.0001;
   Fee: number = 0.0;
-  TargetAccountNumber: string = "";
+  TargetAccountNumber!: number;
+  TargetAccountNumberCheckSum!: number;
   Payload: string = "";
   Password: string = "";
   Error: string = "";
@@ -115,11 +135,16 @@ export default class WalletSendMoney extends Vue {
   mounted() {
     if (this.$route.query) {
       let target = this.$route.query["target"] as string;
-      this.TargetAccountNumber = target;
+      {
+
+        this.TargetAccountNumber = Number.parseInt(target);
+             this.TargetAccountNumberCheckSum = Number.parseInt(target .slice(target.indexOf("-"), target.length));
+      }
 
       let amount = Number.parseFloat(this.$route.query["amount"] as string);
-      this.Amount = amount;
-
+      if (amount) {
+        this.Amount = amount;
+      }
       let payloadType = this.$route.query["payloadType"] as string;
       let payload = this.$route.query["payload"] as string;
 
@@ -137,65 +162,62 @@ export default class WalletSendMoney extends Vue {
 
   async OnSend() {
     try {
-      this.Error = "";
       // disable button
       this.Processing = true;
+      this.Error = "";
 
-      let sender = store.AccountManager.GetAccountByName(this.AccountName);
       if (this.Amount < 0.0001) {
         this.Error = "min amount to send 0.0001";
         return;
       }
 
+      let sender = store.AccountManager.GetAccountByName(this.AccountName);
       if (sender == null) {
         this.Error = "No Wallet found with name: " + this.AccountName;
         return;
       }
 
-      let req = new RpcGetAccount(sender.AccountData.AccountNumber);
-      let rsp: IGetAccountResponse | null = null;
-      await req
-        .Execute(store.WalletConfig.RpcServer)
-        .then(v => {
-          rsp = v;
-        })
-        .catch(err => {
-          this.Error = "Request Accountdata failed !!!";
-          rsp = null;
-        });
+      let accountDataFromBlockChain: IGetAccountResponse | null = null;
 
-      if (rsp == null) {
+      await new RpcGetAccount(sender.AccountData.AccountNumber)
+        .Execute(store.WalletConfig.RpcServer)
+        .then(v => (accountDataFromBlockChain = v))
+        .catch(error => (this.Error = JSON.stringify(error)));
+
+      if (accountDataFromBlockChain == null || this.Error != "") {
         return;
       }
 
       // check balance
-      if (rsp!.balance < this.Amount) {
+      if (accountDataFromBlockChain!.balance < this.Amount + this.Fee) {
         this.Error = "Account balance to low";
         return;
       }
 
       // check target crc
-      let temp = this.TargetAccountNumber.split("-");
-      let targetAcc: number = Number.parseInt(temp[0]);
-      let targetAccChecksum: number = Number.parseInt(temp[1]);
-      let checksum = CalcAccountChecksum(targetAcc);
+      let checksum = CalcAccountChecksum(this.TargetAccountNumber);
 
-      if (targetAccChecksum !== checksum) {
+      if (this.TargetAccountNumberCheckSum.toString() !== checksum.toString()) {
         this.Error =
-          "TargetAccount checksum NOK!!" + targetAccChecksum + "  " + checksum;
+          "TargetAccount checksum NOK!!" +
+          this.TargetAccountNumberCheckSum +
+          "  " +
+          checksum;
         return;
       }
+
+      let payloaddata = await this.GetPayload();
 
       // build transaction
       var trans = new PascalCoinOpTransferMoney(
         sender.AccountData.AccountNumber,
-        rsp!.n_operation + 1,
+        accountDataFromBlockChain!.n_operation + 1,
         this.Amount * 10000,
         this.Fee * 10000,
-        this.GetPayload(),
-        targetAcc
+        payloaddata,
+        this.TargetAccountNumber
       );
-      console.log(sender.AccountData.EncryptedPrivateKey as KtlKeyStorage);
+
       // sign
       var sig = sender.AccountData.EncryptedPrivateKey.Sign(
         this.Password,
@@ -205,12 +227,10 @@ export default class WalletSendMoney extends Vue {
       console.log(sig);
       var data = trans.ToArray(sig.r, sig.s);
 
-      var sendop = new RpcExecuteOperations(
-        "01000000" + Uint8ArrayToHex(data)
-      );
+      var sendop = new RpcExecuteOperations("01000000" + Uint8ArrayToHex(data));
 
       await sendop.Execute(store.WalletConfig.RpcServer).then(v => {
-        if (v[0].valid === undefined) {
+        if (v[0].valid === undefined && v[0].opblock) {
           alert("Sending was OK !!!");
         } else {
           this.Error = v[0].errors;
@@ -229,12 +249,14 @@ export default class WalletSendMoney extends Vue {
   TogglePayload(): void {
     if (this.PayloadFormat === "hex") {
       this.Payload = ktl.StringToHexString(this.Payload);
+      this.PayloadMaxSize = 255 * 2;
     } else {
       this.Payload = ktl.HexStringToAsciiString(this.Payload);
+      this.PayloadMaxSize = 255;
     }
   }
 
-  GetPayload(): Uint8Array {
+  async GetPayload(): Promise<Uint8Array> {
     if (!this.PayloadAktivated) {
       return new Uint8Array(0);
     }
@@ -260,7 +282,43 @@ export default class WalletSendMoney extends Vue {
       throw "to much data in payload!!!";
     }
 
-    return Uint8ArrayFromHex(hexString);
+    if (this.PayloadEncryption === "KTECH_TARGETPUBLICKEY") {
+      let accdata = await store.DataProvider.GetAccountInfo(
+        this.TargetAccountNumber
+      );
+
+      let r = new BinaryReaderWriter(Uint8ArrayFromHex(accdata.enc_pubkey));
+      let keytype: eKeyTypes = Uint8ArrayToHex(r.ReadBytes(2)) as eKeyTypes;
+      let len = r.ReadUInt16();
+      let x = r.ReadBytes(len);
+      len = r.ReadUInt16();
+      let y = r.ReadBytes(len);
+
+      r.index = 0;
+      r.AddByte(4);
+      r.AddBytes(x);
+      r.AddBytes(y);
+
+      let data = ktl.EcCrypto.ECDHEncrypt(
+        keytype,
+        r.ToArray(),
+        Uint8ArrayFromHex(hexString)
+      );
+
+      r = new BinaryReaderWriter();
+
+      r.AddByte(data.publicKey.length / 2);
+      r.AddByte(data.data.length);
+      r.AddBytes(Uint8ArrayFromHex(data.publicKey));
+      r.AddBytes(data.data);
+
+      if (r.index > 255) {
+        throw "Encrypted Payload to big => " + r.index;
+      }
+      return Promise.resolve(r.ToArray());
+    }
+
+    return Promise.resolve(Uint8ArrayFromHex(hexString));
   }
 }
 </script>
