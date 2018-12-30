@@ -72,7 +72,7 @@ export class DataProvider {
 
       let cmd = new RpcGetAccountOperations(
         accountNumber,
-        100,
+        10,
         -1 // -1 for pending
       );
 
