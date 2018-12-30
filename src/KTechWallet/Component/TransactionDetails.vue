@@ -3,13 +3,17 @@
     <v-card-media>
       <!-- payload -->
       <div v-if="AccountOperation.payload.length">
-        <v-toolbar>
+        <v-toolbar  >
           <h2>Payload:</h2>
-          <v-spacer/>Display:
-          <v-btn-toggle v-model="payLoadFromat">
+        </v-toolbar>
+        <div class="pt-1 pb-1">Display:
+          <v-btn-toggle flat v-model="payLoadFromat" class="mr-3">
             <v-btn color="accent" flat value="HEX" @click="TogglePayload('HEX')">Hex</v-btn>
             <v-btn color="accent" flat value="ASCII" @click="TogglePayload('ASCII')">ASCII</v-btn>
-          </v-btn-toggle>encryption:
+          </v-btn-toggle>
+        </div>
+
+        <div class="pt-1 pb-1">Encryption:
           <v-btn-toggle v-model="encryptionFormat">
             <v-btn color="accent" flat value="NONE" @click="TogglePayload('NONE')">NONE</v-btn>
             <v-btn
@@ -26,9 +30,9 @@
               @click="TogglePayload('ECDH_KTECH')"
             >ECDH_KTECH</v-btn>
           </v-btn-toggle>
-        </v-toolbar>
+        </div>
+
         <v-textarea box v-model="payload" disabled/>
-        <br>
       </div>
 
       <!-- AccountOperation -->
@@ -132,7 +136,7 @@ export default class TransactionDetails extends Vue {
       macLen != 0x10 ||
       orgMsgLen === 0 ||
       encMsgLen < 16 ||
-      reader.buffer.length !== publicKeyLen + macLen +  encMsgLen + 6
+      reader.buffer.length !== publicKeyLen + macLen + encMsgLen + 6
     ) {
       return "inputData != EcdhPascal Fromat";
     }
@@ -171,7 +175,7 @@ export default class TransactionDetails extends Vue {
 
     let publicKeyLen = reader.ReadByte();
     let msgLen = reader.ReadByte();
-    
+
     if (reader.buffer.length !== 2 + publicKeyLen + msgLen) {
       return "inputData != EcdhPascal Fromat";
     }
