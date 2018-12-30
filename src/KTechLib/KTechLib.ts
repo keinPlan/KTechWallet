@@ -6,3 +6,4 @@ export * from "./KtlKeyStorage";
 export * from "./PascalCoin/PascalCoin";
 export * from "./PascalCoin/PascalCoinRpc";
 export * from "./PascalCoin/PascalCoinTransaction";
+export * from "./KtlContacts";

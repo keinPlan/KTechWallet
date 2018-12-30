@@ -4,8 +4,10 @@ import {
   RpcGetAccount,
   IGetAccountResponse,
   RpcGetAccountOperations,
-  IGetAccountOperationsResponse
+  IGetAccountOperationsResponse,
+  KtlContactsManager
 } from "@/KTechLib/KTechLib";
+
 
 
 
@@ -102,6 +104,7 @@ export class DataProvider {
 
 class SharedObject {
   public static AccountManager: KtlAccoutManager = new KtlAccoutManager();
+  public static ContactsManager: KtlContactsManager = new KtlContactsManager();
   public static WalletConfig: Config = new Config();
   public static DataProvider: DataProvider = new DataProvider(SharedObject.WalletConfig);
 }

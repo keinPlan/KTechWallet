@@ -1,12 +1,11 @@
 <template>
   <v-layout align-space-around justify-space-around wrap row>
+    <!-- From: -->
     <v-flex xs12 md6>
       <v-card>
-        <v-card-title primary-title>
-          <div>
-            <h3 class="headline mb-0">From:</h3>
-          </div>
-        </v-card-title>
+        <v-card-media>
+          <v-toolbar class="headline mb-0">From:</v-toolbar>
+        </v-card-media>
         <v-card-text>
           <v-select v-model="AccountName" :items="AccountNames" box label="Sender"></v-select>
           <v-layout row wrap>
@@ -16,16 +15,27 @@
         </v-card-text>
       </v-card>
     </v-flex>
-
+    <!-- To: -->
     <v-flex xs12 md6>
       <v-card>
-        <v-card-title primary-title>
-          <div>
-            <h3 class="headline mb-0">To:</h3>
-          </div>
-        </v-card-title>
+        <v-card-media>
+          <v-toolbar class="headline mb-0">To:
+            <v-spacer/>
+            <v-btn-toggle v-model="ToContact" mandatory>
+              <v-btn color="accent" flat :value="true">Contact</v-btn>
+              <v-btn color="accent" flat :value="false">Account</v-btn>
+            </v-btn-toggle>
+          </v-toolbar>
+        </v-card-media>
         <v-card-text>
-          <!-- <v-combobox :items="AccountNames" label="Select account "></v-combobox> -->
+          <v-combobox
+            box
+            v-show="ToContact"
+            v-model="SelectedContact"
+            :items="ContactNames"
+            label="Select contact"
+            @change="ContactChanged"
+          ></v-combobox>
           <v-layout row wrap>
             <v-text-field
               v-model="TargetAccountNumber"
@@ -33,6 +43,7 @@
               label="account number"
               placeholder="xxxxxxxx"
               required
+              v-show="!ToContact"
             />
             <v-text-field
               style="width:50px"
@@ -42,17 +53,24 @@
               type="number"
               mask="##"
               required
+              v-show="!ToContact"
             />
           </v-layout>
         </v-card-text>
       </v-card>
     </v-flex>
+    <!--   Payload -->
     <v-flex xs12>
       <v-card>
-        <v-card-title class="pt-0 pb-0">
-          <v-switch v-model="PayloadAktivated" label="Payload:"></v-switch>
-          <h3 class="headline mb-0"></h3>
-        </v-card-title>
+        <v-card-media>
+          <v-toolbar>
+            <h3 class="headline mb-0">Payload:</h3>
+            <v-spacer/>
+            <v-btn icon color="accent" @click="PayloadAktivated=!PayloadAktivated">
+              <v-icon>{{PayloadAktivated ? 'remove_circle':'add_circle'}}</v-icon>
+            </v-btn>
+          </v-toolbar>
+        </v-card-media>
 
         <v-card-text v-show="PayloadAktivated">
           <v-radio-group v-model="PayloadFormat" @change="TogglePayload" row label="PayloadFromat:">
@@ -66,10 +84,12 @@
             <!--  <v-radio label="Password" value="3"></v-radio> -->
           </v-radio-group>
 
-          <v-textarea box label="Payload" v-model="Payload" :counter="PayloadMaxSize"></v-textarea>
+          <v-textarea box label="Payload:" v-model="Payload" :counter="PayloadMaxSize" auto-grow></v-textarea>
         </v-card-text>
       </v-card>
     </v-flex>
+
+    <!--  password / send -->
     <v-flex xs12>
       <v-card>
         <v-card-text>
@@ -110,18 +130,19 @@ import {
   BinaryReaderWriter
 } from "@/KTechLib/Helper";
 import { KtlKeyStorage } from "@/KTechLib/KtlKeyStorage";
-import { promises } from "fs";
-import { throws } from "assert";
 
 @Component({})
 export default class WalletSendMoney extends Vue {
   showPassword: boolean = false;
   AccountNames: Array<string> = store.AccountManager.GetAccountNames();
+  ContactNames: string[] = store.ContactsManager.GetAccountNames();
   PayloadAktivated: boolean = false;
   PayloadFormat: string = "hex";
   PayloadEncryption: string = "None";
   PayloadMaxSize: number = 255 * 2;
   @Prop() AccountName!: string;
+  ToContact: boolean = true;
+  SelectedContact!: string;
 
   Amount: number = 0.0001;
   Fee: number = 0.0;
@@ -135,10 +156,12 @@ export default class WalletSendMoney extends Vue {
   mounted() {
     if (this.$route.query) {
       let target = this.$route.query["target"] as string;
-      {
-
+      if (target) {
+        this.ToContact = false;
         this.TargetAccountNumber = Number.parseInt(target);
-             this.TargetAccountNumberCheckSum = Number.parseInt(target .slice(target.indexOf("-"), target.length));
+        this.TargetAccountNumberCheckSum = Number.parseInt(
+          target.slice(target.indexOf("-"), target.length)
+        );
       }
 
       let amount = Number.parseFloat(this.$route.query["amount"] as string);
@@ -165,6 +188,13 @@ export default class WalletSendMoney extends Vue {
       // disable button
       this.Processing = true;
       this.Error = "";
+
+      if (this.ToContact) {
+        this.ContactChanged(); // force accnumber accchecksum update
+        if (this.Error != "") {
+          return;
+        }
+      }
 
       if (this.Amount < 0.0001) {
         this.Error = "min amount to send 0.0001";
@@ -319,6 +349,17 @@ export default class WalletSendMoney extends Vue {
     }
 
     return Promise.resolve(Uint8ArrayFromHex(hexString));
+  }
+
+  ContactChanged() {
+    let contract = store.ContactsManager.GetAccountByName(this.SelectedContact);
+    if (contract) {
+      this.Error = "";
+      this.TargetAccountNumber = contract.ContactAccountNumber;
+      this.TargetAccountNumberCheckSum = contract.ContactAccountNumberCheckSum;
+    } else {
+      this.Error = "selected account not valid";
+    }
   }
 }
 </script>
