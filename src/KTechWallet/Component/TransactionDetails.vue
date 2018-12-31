@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-media>
+    <v-responsive>
       <!-- payload -->
       <div v-if="AccountOperation.payload.length">
         <v-toolbar  >
@@ -52,7 +52,7 @@
           :rows="rawOperationDataLines"
         />
       </div>
-    </v-card-media>
+    </v-responsive>
   </v-card>
 </template>
 
@@ -77,15 +77,14 @@ export default class TransactionDetails extends Vue {
   payload: string = "";
   payLoadFromat: string = "HEX";
   encryptionFormat: string = "NONE";
-  rawOperationData!: string;
+  rawOperationData!: string ;
   rawOperationDataLines: number = 0;
   ShowRawOperationData: boolean = false;
 
-  mounted() {
+  created() {
     this.payload = this.AccountOperation.payload;
     this.rawOperationData = JSON.stringify(this.AccountOperation, null, 4);
-    this.rawOperationDataLines = this.rawOperationData.split("\n").length;
-    console.log(this.rawOperationDataLines);
+    this.rawOperationDataLines = this.rawOperationData.split("\n").length;  
   }
 
   TogglePayload(v: string) {

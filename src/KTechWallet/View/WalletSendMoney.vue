@@ -3,9 +3,9 @@
     <!-- From: -->
     <v-flex xs12 md6>
       <v-card>
-        <v-card-media>
+        <v-responsive>
           <v-toolbar class="headline mb-0">From:</v-toolbar>
-        </v-card-media>
+        </v-responsive>
         <v-card-text>
           <v-select v-model="AccountName" :items="AccountNames" box label="Sender"></v-select>
           <v-layout row wrap>
@@ -18,7 +18,7 @@
     <!-- To: -->
     <v-flex xs12 md6>
       <v-card>
-        <v-card-media>
+        <v-responsive>
           <v-toolbar class="headline mb-0">To:
             <v-spacer/>
             <v-btn-toggle v-model="ToContact" mandatory>
@@ -26,7 +26,7 @@
               <v-btn color="accent" flat :value="false">Account</v-btn>
             </v-btn-toggle>
           </v-toolbar>
-        </v-card-media>
+        </v-responsive>
         <v-card-text>
           <v-combobox
             box
@@ -62,7 +62,7 @@
     <!--   Payload -->
     <v-flex xs12>
       <v-card>
-        <v-card-media>
+        <v-responsive>
           <v-toolbar>
             <h3 class="headline mb-0">Payload:</h3>
             <v-spacer/>
@@ -70,7 +70,7 @@
               <v-icon>{{PayloadAktivated ? 'remove_circle':'add_circle'}}</v-icon>
             </v-btn>
           </v-toolbar>
-        </v-card-media>
+        </v-responsive>
 
         <v-card-text v-show="PayloadAktivated">
           <v-radio-group v-model="PayloadFormat" @change="TogglePayload" row label="PayloadFromat:">

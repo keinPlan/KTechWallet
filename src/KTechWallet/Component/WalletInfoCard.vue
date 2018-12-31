@@ -15,14 +15,8 @@
         </v-chip>
       </div>
     </v-card-title>
-
+    <v-alert :value="Error !== ''" v-html="Error"></v-alert>
     <v-toolbar flat>
-      <v-btn icon color="accent" v-show="false">
-        <v-icon>notification_important</v-icon>
-      </v-btn>
-      <v-btn icon color="error" v-show="false">
-        <v-icon>warning</v-icon>
-      </v-btn>
       <v-spacer></v-spacer>
       <v-btn icon @click="DeleteWallet">
         <v-icon>delete</v-icon>
@@ -57,7 +51,8 @@ import {
   eKeyTypes,
   KtlAccount,
   KtlStorageWindowLocalStorage,
-  CalcAccountChecksum
+  CalcAccountChecksum,
+  PascalPublicKey
 } from "@/KTechLib/KTechLib";
 
 @Component({})
@@ -69,7 +64,8 @@ export default class WalletInfoCard extends Vue {
   autorenew_loading: boolean = false;
   AccountCheckSum: number = 0;
   accountChanged = false;
-
+  Error: string = "";
+  showToolTip: boolean = false;
   constructor() {
     super();
     console.log(this.AccountName);
@@ -100,6 +96,15 @@ export default class WalletInfoCard extends Vue {
         this.Balance = value ? value.balance.toString() : "";
         this.accountChanged =
           value.updated_b !== this.Account!.AccountData.LastUpdate;
+
+        if (
+          this.Account!.AccountData.AccountPublicKey !==
+          PascalPublicKey.CreateFromEncPublicKey(
+            value.enc_pubkey
+          ).EncodeBase58()
+        ) {
+          this.Error = "Stored Public Key != Safebox PublicKey <br>  - Wrong private key  <br>- Wrong accountNumber";
+        }
       })
       .catch(error => (this.Balance = error.toString()))
       .finally(() => (this.autorenew_loading = false));

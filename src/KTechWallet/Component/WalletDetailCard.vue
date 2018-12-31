@@ -1,7 +1,7 @@
 
 <template>
   <v-card>
-    <v-card-media color="primary">
+    <v-responsive color="primary">
       <v-toolbar>
         <div>
           <h2>Account: {{this.AccountName}}</h2>
@@ -13,15 +13,17 @@
           <v-icon>{{ShowAccountsDetails ? 'visibility' : 'visibility_off'}}</v-icon>
         </v-btn>
       </v-toolbar>
-    </v-card-media>
+    </v-responsive>
 
     <v-card-text v-show="ShowAccountsDetails">
       <v-text-field label="AccountName:" :value="AccountName" disabled/>
       <v-text-field
+        prepend-icon="edit"
+        @click:prepend="ChangeAccNumber"
         label="AccountNumber:"
         :value="this.Account.AccountData.AccountNumber"
         :suffix="'-' + AccountCheckSum"
-        disabled
+        readonly
         type="Number"
       />
 
@@ -45,38 +47,35 @@
         <v-icon>edit</v-icon>
       </v-btn>
 
-      <v-dialog width="500">
+      <!-- pk dialog -->
+      <v-dialog width="500" >
         <v-btn slot="activator">
           <v-icon>vpn_key</v-icon>
         </v-btn>
-        <!-- content -->
+
         <v-card>
           <v-card-text>
-            <v-tabs>
-              <v-tab>PascalWallet Export</v-tab>
-              <v-tab-item>
-                <v-textarea
-                  box
-                  color="deep-purple"
-                  label="ExportedData"
-                  type="number"
-                  v-model="accountNumber"
-                ></v-textarea>
-                <v-text-field
-                  box
-                  color="deep-purple"
-                  counter="32"
-                  label="Password"
-                  style="min-height: 96px"
-                  type="password"
-                  v-model="privateKeyPassword"
-                ></v-text-field>
-              </v-tab-item>
+                        <v-text-field
+              box
+              color="deep-purple"
+              counter="32"
+              label="Password"
+              style="min-height: 96px"
+              type="password"
+              v-model="PrivateKeyPassword"
+            ></v-text-field>
 
-              <v-tab>KtechWallet Export</v-tab>
-              <v-tab-item>item1</v-tab-item>
-            </v-tabs>
-            <v-btn block>Save</v-btn>
+            <v-btn @click="DecryptPrivateKey">Decrypt</v-btn> 
+            <v-btn @click="ClearResult">ClearResult
+            </v-btn>
+            <v-textarea
+              box
+              color="deep-purple"
+              label="ExportedData"
+              type="number"
+              v-model="PrivateKey"
+            ></v-textarea>
+
           </v-card-text>
         </v-card>
         <!-- content end-->
@@ -95,8 +94,10 @@ import {
   KtlKeyStorage,
   eKeyTypes,
   KtlAccount,
-  KtlStorageWindowLocalStorage, 
-  CalcAccountChecksum
+  KtlStorageWindowLocalStorage,
+  CalcAccountChecksum,
+  PascalPublicKey,
+  Uint8ArrayToHex
 } from "@/KTechLib/KTechLib";
 
 @Component({ components: {} })
@@ -108,6 +109,9 @@ export default class WalletDetailCard extends Vue {
   autorenew_loading: boolean = false;
   AccountCheckSum: number = 0;
   ShowAccountsDetails: boolean = false;
+
+  PrivateKeyPassword: string = "";
+  PrivateKey: string = "";
   constructor() {
     super();
     this.Account = store.AccountManager.GetAccountByName(this.AccountName);
@@ -140,24 +144,33 @@ export default class WalletDetailCard extends Vue {
       .finally(() => (this.autorenew_loading = false));
   }
 
-  DeleteWallet() {
-    if (!this.Account) {
-      return;
-    }
+  ChangeAccNumber() {
+    let input = prompt("Insert New AccountNumber");
 
-    var answer = confirm("Delete Account ?");
-
-    if (answer) {
-      store.AccountManager.DeleteAccount(this.AccountName);
-      this.Account = undefined;
+    if (input) {
+      this.Account!.AccountData.AccountNumber = Number.parseInt(input);
     }
   }
 
-  IsPascalCoin(): boolean {
-    if (this.Account) {
-      return this.Account.AccountData.CoinType === eCoinType.PASCAL;
+  DecryptPrivateKey() {
+    let pk = this.Account!.AccountData.EncryptedPrivateKey.UnPackKey(
+      this.PrivateKeyPassword
+    );
+    let PK = PascalPublicKey.CreateFromPrivateKey(
+      this.Account!.AccountData.KeyType,
+      pk
+    );
+
+    if (this.Account!.AccountData.AccountPublicKey !== PK.EncodeBase58()) {
+      this.PrivateKey = "Wrong Password";
+    } else {
+      this.PrivateKey = Uint8ArrayToHex(pk);
     }
-    return false;
+  }
+
+  ClearResult(){
+    this.PrivateKey ="";
+    this.PrivateKeyPassword ="";
   }
 }
 </script>

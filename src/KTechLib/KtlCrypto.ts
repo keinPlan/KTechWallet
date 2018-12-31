@@ -11,6 +11,19 @@ export enum eKeyTypes {
 }
 
 export class EcCrypto {
+
+    public static NewKeyPair(keyType: eKeyTypes): { publicX: Uint8Array, publicY: Uint8Array, privateP: Uint8Array } {
+        let curve = GetCurve(keyType);
+
+        let keypair = curve.genKeyPair();
+
+        let x: Uint8Array = keypair.getPublic().getX().toArray();
+        let y: Uint8Array = keypair.getPublic().getY().toArray();
+        let p =(keypair.getPrivate() as any).toArray();
+ 
+        return {publicX :x , publicY :y , privateP :new Uint8Array(p)};
+    }
+
     public static GetPublicKey_Raw(keyType: eKeyTypes, privatePoint: Uint8Array): { x: Uint8Array, y: Uint8Array } {
         let curve = GetCurve(keyType);
         var key = curve.keyFromPrivate(Buffer.from(privatePoint));
@@ -40,7 +53,7 @@ export class EcCrypto {
 
         return key.verify(Buffer.from(data.buffer), sig);
     }
- 
+
     public static ECDHDecrypt(keyType: eKeyTypes, privatePoint: Uint8Array, publickey: Uint8Array, msg: Uint8Array):
         Uint8Array {
         let curve = GetCurve(keyType);
@@ -52,11 +65,10 @@ export class EcCrypto {
         return decryptedData;
     }
 
-    public static ECDHEncrypt(keyType: eKeyTypes, publickey: Uint8Array, msg: Uint8Array):
-        {
-            data:Uint8Array,
-            publicKey : string
-        } {
+    public static ECDHEncrypt(keyType: eKeyTypes, publickey: Uint8Array, msg: Uint8Array): {
+        data: Uint8Array,
+        publicKey: string
+    } {
         let curve = GetCurve(keyType);
         let tempKey = curve.genKeyPair();
         var pubkey = curve.keyFromPublic(Buffer.from(publickey));
@@ -65,7 +77,7 @@ export class EcCrypto {
 
         let encryptedData = Aes.Encrypt_AES_CBC_PKCS7(secrectkey.slice(0, 32), new Uint8Array(16), msg);
 
-        return {data:encryptedData ,publicKey:tempKey.getPublic(true,"hex")};
+        return { data: encryptedData, publicKey: tempKey.getPublic(true, "hex") };
     }
 }
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <v-stepper v-model="step">
+    <v-stepper v-model="step" lazy>
       <v-stepper-header>
         <v-stepper-step step="1">Select Name</v-stepper-step>
 
@@ -34,16 +34,42 @@
             type="number"
             v-model="accountNumber"
           ></v-text-field>
-          <v-text-field
-            box
-            color="deep-purple"
-            counter="32"
-            label="Password"
-            style="min-height: 96px"
-            type="password"
-            v-model="privateKeyPassword"
-          ></v-text-field>
-          <v-textarea box label="PrivateKey" v-model="privateKey" auto-grow></v-textarea>
+
+          <v-card class="pa-0 ma-0">
+            <v-responsive>
+              <v-toolbar>
+                <h2>PrivateKey:</h2>
+              </v-toolbar>
+
+              <v-btn-toggle v-model="ImportType" class="mt-1">
+                <v-btn color="accent" flat value="pascexport">pascexport</v-btn>
+                <v-btn color="accent" flat value="newkey">newkey</v-btn>
+              </v-btn-toggle>
+            </v-responsive>
+
+            <v-card-text v-show="this.ImportType === 'pascexport'">
+              <v-text-field
+                box
+                color="deep-purple"
+                counter="32"
+                label="Password"
+                style="min-height: 96px"
+                type="password"
+                v-model="Pascexport_Password"
+              ></v-text-field>
+              <v-textarea box label="ExportedData" v-model="Pascexport_KeyData" auto-grow></v-textarea>
+            </v-card-text>
+
+            <v-card-text v-show="this.ImportType === 'newkey'">
+              <v-radio-group v-model="KeyType" label="KeyType:">
+                <v-radio label="secp256k1" value="ca02"></v-radio>
+                <v-radio label="sect283k1" value="d902" disabled></v-radio>
+                <v-radio label="sect384r1" value="cb02"></v-radio>
+                <v-radio label="sect521r1" value="cc02"></v-radio>
+              </v-radio-group>
+            </v-card-text>
+          </v-card>
+
           <v-btn block color="accent" @click="NextStep">Continue</v-btn>
         </v-form>
       </v-stepper-content>
@@ -52,26 +78,40 @@
         <div>
           <v-card class="caption" color="primary">
             <v-card-text style="word-wrap: break-word">
-              <h3 class="headline mb-0">keinPlan1337</h3>
+              <h3 class="headline mb-0">{{accountName}}</h3>
               <br>
-              <span class="font-weight-bold caption">CoinType:</span>PASCAL
+              <span class="font-weight-bold caption">CoinType:</span>
+              {{coinType}}
               <br>
-              <span class="font-weight-bold caption">AccountNumber:</span> 0123456789-xx
+              <span class="font-weight-bold caption">AccountNumber:</span>
+              {{accountNumber}}
               <br>
+              <span class="font-weight-bold caption">KeyType:</span>
+              {{KeyType}}
+              <br>
+
               <span class="font-weight-bold caption">PublicKey:</span>
-              <br>3Ghhbojn7gpYMHxz8nyUZei6hKsdjczjqtBVC5VpUMu7snV7jDnnc1Hi4rRVKu2voKHZ52m6SYdNuixuKkyWs4NeDzWCdiD4QHyFwe
+              <br>
+              {{PublicKeyB58}}
             </v-card-text>
           </v-card>
         </div>
 
         <v-text-field
           box
-          autofocus
           class="pt-5 ma-0"
           color="accent"
           label="Password"
           placeholder="Please Enter password to save privateKey"
           v-model="newPassword"
+          type="password"
+        ></v-text-field>
+        <v-text-field
+          box
+          color="accent"
+          label="Password"
+          placeholder="repeat password"
+          v-model="newPassword2"
           type="password"
         ></v-text-field>
         <v-btn
@@ -103,7 +143,8 @@ import {
   PascalPublicKey,
   KtlAccountData,
   KtlKeyStorage,
-  KtlAccount
+  KtlAccount,
+  EcCrypto
 } from "@/KTechLib/KTechLib";
 import router from "@/KTechWallet/router";
 
@@ -114,7 +155,7 @@ export default class WalletCreateAccountView extends Vue {
 
   coinTypes = [eCoinType.PASCAL, eCoinType.ETH];
   selectedCoinType: eCoinType = eCoinType.NONE;
-  lastupdate:number =0;
+  lastupdate: number = 0;
 
   firstStep: boolean = false;
   secondStep: boolean = false;
@@ -124,9 +165,15 @@ export default class WalletCreateAccountView extends Vue {
   accountName: string = "";
   coinType: eCoinType = eCoinType.PASCAL;
   newPassword: string = "";
-  privateKey: string = "";
-  privateKeyPassword: string = "";
+  newPassword2: string = "";
+  Pascexport_KeyData: string = "";
+  Pascexport_Password: string = "";
   accountNumber: number = 118723;
+
+  ImportType: string = "newkey";
+  KeyType: eKeyTypes = eKeyTypes.SECP256K1;
+  PublicKeyB58: string = "";
+  RawPrivateKey: Uint8Array = new Uint8Array();
 
   nameRules = [
     (v: string) => !!v || "Name is required",
@@ -151,51 +198,72 @@ export default class WalletCreateAccountView extends Vue {
           return;
         }
       } else if (this.step === 2) {
-        var key = CreatePrivateKeyFromPasclWalletExport(
-          this.privateKey,
-          this.privateKeyPassword
-        );
+        if (this.ImportType === "pascexport") {
+          if (this.Pascexport_KeyData.length % 2 !== 0) {
+            this.Pascexport_KeyData = "0" + this.Pascexport_KeyData;
+          }
 
-        if (key.keytype === eKeyTypes.INVALID) {
-          this.ErrorMsg = "Password or keydata wrong";
-          return;
-        }
+          var key = CreatePrivateKeyFromPasclWalletExport(
+            this.Pascexport_KeyData,
+            this.Pascexport_Password
+          );
 
-        var publickey = PascalPublicKey.CreateFromPrivateKey(
-          key.keytype,
-          key.privateKey
-        );
+          if (key.keytype === eKeyTypes.INVALID) {
+            this.ErrorMsg = "Password or keydata wrong";
+            return;
+          }
 
-        var rpc = new RpcGetAccount(this.accountNumber);
-        let result: boolean = false;
-        var request = await rpc
-          .Execute()
-          .then(v => {
-            this.lastupdate = v.updated_b;
-            if (publickey.ToHexString() !== v.enc_pubkey.toLowerCase()) {
-              this.ErrorMsg =
-                "PublicKey from private: " +
-                publickey.ToHexString() +
-                "\nPublicKey from account: " +
-                v.enc_pubkey.toLowerCase();
+          var publickey = PascalPublicKey.CreateFromPrivateKey(
+            key.keytype,
+            key.privateKey
+          );
 
+          this.PublicKeyB58 = publickey.EncodeBase58();
+          this.RawPrivateKey = key.privateKey;
+          this.KeyType = key.keytype;
+
+          var rpc = new RpcGetAccount(this.accountNumber);
+          let result: boolean = false;
+          var request = await rpc
+            .Execute()
+            .then(v => {
+              this.lastupdate = v.updated_b;
+              if (publickey.ToHexString() !== v.enc_pubkey.toLowerCase()) {
+                this.ErrorMsg =
+                  "PublicKey from private: " +
+                  publickey.ToHexString() +
+                  "\nPublicKey from account: " +
+                  v.enc_pubkey.toLowerCase();
+
+                result = confirm(
+                  "the accounts public key dosn't match the privatekey\nignore?"
+                );
+              } else {
+                result = true;
+              }
+            })
+            .catch(v => {
               result = confirm(
-                "the accounts public key dosn't match the privatekey\nignore?"
+                "Failed to get accounts publickey: \n" +
+                  v +
+                  "\nignore and continue?"
               );
-            } else {
-              result = true;
-            }
-          })
-          .catch(v => {
-            result = confirm(
-              "Failed to get accounts publickey: \n" +
-                v +
-                "\nignore and continue?"
-            );
-          });
+            });
 
-        if (!result) {
-          return;
+          if (!result) {
+            return;
+          }
+        } else if (this.ImportType === "newkey") {
+          let keydata = EcCrypto.NewKeyPair(this.KeyType);
+          let pubkey = new PascalPublicKey(
+            1,
+            this.KeyType,
+            keydata.publicX,
+            keydata.publicY
+          );
+
+          this.PublicKeyB58 = pubkey.EncodeBase58();
+          this.RawPrivateKey = keydata.privateP;
         }
       }
 
@@ -206,6 +274,7 @@ export default class WalletCreateAccountView extends Vue {
   }
 
   onSave() {
+    this.ErrorMsg = "";
     let checkResult = true;
 
     if (!this.accountName) {
@@ -216,50 +285,31 @@ export default class WalletCreateAccountView extends Vue {
         checkResult = false;
       }
     }
-    console.log(this.newPassword);
+
     if (!this.newPassword) {
       // nop
       checkResult = false;
     }
-    console.log(this.privateKey);
-    if (!this.privateKey) {
+
+    if (this.newPassword !== this.newPassword2) {
+      this.ErrorMsg = "passwords don't match";
       checkResult = false;
     }
 
-    console.log(this.privateKeyPassword);
-    if (!this.privateKeyPassword) {
+    if (!this.RawPrivateKey || this.RawPrivateKey.length === 0) {
       checkResult = false;
     }
-    console.log(checkResult);
+
     if (!checkResult) return;
     // input ok checkkey
-
-    let keydata = this.privateKey;
-    if (keydata.length % 2 !== 0) {
-      keydata = "0" + keydata;
-    }
-
-    let key = CreatePrivateKeyFromPasclWalletExport(
-      keydata,
-      this.privateKeyPassword
-    );
-    
-    let publickey = PascalPublicKey.CreateFromPrivateKey(
-      key.keytype,
-      key.privateKey
-    );
-
-    if (!publickey.IsValid()) {
-      throw "publickey !Valid";
-    }
 
     let accData = new KtlAccountData(
       eCoinType.PASCAL,
       this.accountNumber,
-      key.keytype,
-      publickey.EncodeBase58(),
+      this.KeyType,
+      this.PublicKeyB58,
       this.lastupdate,
-      KtlKeyStorage.CreateFromRawKey(key.privateKey, this.newPassword)
+      KtlKeyStorage.CreateFromRawKey(this.RawPrivateKey, this.newPassword)
     );
 
     let account = new KtlAccount(

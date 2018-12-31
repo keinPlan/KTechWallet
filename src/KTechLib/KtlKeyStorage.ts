@@ -36,16 +36,16 @@ export class KtlKeyStorage {
         return new KtlKeyStorage(encryptedEcKey, salt, checkSum);
     }
 
-    private unPackKey(password: string): Uint8Array {
+    public UnPackKey(password: string): Uint8Array {
         let key = Kdf.Kdf2_Sha512_Salt(password, this.salt);
         return Aes.Decrypt_AES(key, this.encryptedKey);
     }
 
     public Sign(password: string, data: Uint8Array, keyType: eKeyTypes): { r: Uint8Array, s: Uint8Array } {
-        return EcCrypto.sign(keyType, this.unPackKey(password), data);
+        return EcCrypto.sign(keyType, this.UnPackKey(password), data);
     }
 
     public ECDHDecrypt(keyType: eKeyTypes, password: string, data: Uint8Array, publicKey: Uint8Array): Uint8Array {
-        return EcCrypto.ECDHDecrypt(keyType, this.unPackKey(password), publicKey, data);
+        return EcCrypto.ECDHDecrypt(keyType, this.UnPackKey(password), publicKey, data);
     }
 }

@@ -10,7 +10,6 @@
     <!-- add contacts dialog-->
     <v-dialog lazy persistent fullscreen :value="showAddDialog">
       <v-card>
-        <v-card-media></v-card-media>
         <v-card-text>
           <v-toolbar>
             <h1>Add new contact</h1>
@@ -48,7 +47,7 @@
     <v-layout wrap row>
       <v-flex xs12 sm6 md4 lg4 xl3 v-for="name in contactNames" :key="name">
         <v-card>
-          <v-card-media>
+          <v-responsive>
             <v-toolbar>
               <h2>{{GetContat(name).ContactName}}</h2>
               <v-spacer/>
@@ -56,7 +55,7 @@
                 <v-icon @click="Delete(name)">delete</v-icon>
               </v-btn>
             </v-toolbar>
-          </v-card-media>
+          </v-responsive>
           <v-card-text>
             <div>{{GetContat(name).ContactAccountNumber}}-{{GetContat(name).ContactAccountNumberCheckSum}}</div>
           </v-card-text>

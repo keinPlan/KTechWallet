@@ -1,6 +1,6 @@
 <template>
   <v-card>
-    <v-card-media>
+    <v-responsive>
       <v-toolbar>
         <h2>TransactionHistoy</h2>
         <v-spacer/>
@@ -8,24 +8,23 @@
           <v-icon>autorenew</v-icon>
         </v-btn>
       </v-toolbar>
-    </v-card-media>
+    </v-responsive>
 
-    <v-card-media>
+    <v-responsive>
       <v-alert :value="this.Error.length > 0" type="error">{{this.Error}}</v-alert>
       <v-expansion-panel focusable>
         <v-expansion-panel-content v-for="trans in this.Operations" :key="trans.ophash">
           <div slot="header">
-    
             <v-icon large :color="GetIconColor(trans)">{{GetIcon(trans)}}</v-icon>
-                    <v-icon v-if="trans.block > AccountLastUpdatedAtBlock" large color="warning">fiber_new</v-icon>
+            <v-icon v-if="trans.block > AccountLastUpdatedAtBlock" large color="warning">fiber_new</v-icon>
             <v-icon v-if="trans.payload" large color="info">message</v-icon>
             {{trans.block}} {{trans.optxt}}
           </div>
 
-          <TransactionDetails v-bind:AccountOperation="trans"  v-bind:AccountName="AccountName"/>
+          <TransactionDetails v-bind:AccountOperation="trans" v-bind:AccountName="AccountName"/>
         </v-expansion-panel-content>
       </v-expansion-panel>
-    </v-card-media>
+    </v-responsive>
   </v-card>
 </template>
 
@@ -42,12 +41,12 @@ import TransactionDetails from "@/KTechWallet/Component/TransactionDetails.vue";
 })
 export default class TransactionHistoy extends Vue {
   @Prop() AccountName!: string;
-  Operations!: ktl.IGetAccountOperationsResponse[];
+  Operations: ktl.IGetAccountOperationsResponse[] =  [];
   Error: string = "";
   Loading: boolean = false;
   AccountLastUpdatedAtBlock = 0;
 
-  mounted() {
+  created() {
     this.Update();
   }
 
