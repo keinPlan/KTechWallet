@@ -10,7 +10,7 @@
     "test:unit": "vue-cli-service test:unit --coverage",
     "cordova":"set BaseURL=.& vue-cli-service build --dest=KTechWalletCordova/www/",
     "cordova:android":   "cd KTechWalletCordova&cordova build android --release",
-    "cordova:windows":   "cd KTechWalletCordova&cordova build windows "
+    "cordova:windows":   "cd KTechWalletCordova&cordova build windows"
   },
   "dependencies": {
     "@types/elliptic": "^6.4.0",
