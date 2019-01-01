@@ -1,0 +1,25 @@
+{
+  "name": "ktechwallet",
+  "displayName": "KTechWallet",
+  "version": "0.0.1",
+  "description": "PascalCoin Wallet",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "keinplan1337@gmail.com",
+  "dependencies": {
+    "cordova-android": "^7.1.4",
+    "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-windows": "^6.0.1"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-whitelist": {}
+    },
+    "platforms": [
+      "windows",
+      "android"
+    ]
+  }
+}

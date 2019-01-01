@@ -23,3 +23,5 @@ yarn-error.log*
 *.sln
 *.sw*
 /coverage
+/KTechWalletCordova/platforms
+/KTechWalletCordova/www
