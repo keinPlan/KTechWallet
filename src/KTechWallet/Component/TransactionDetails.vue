@@ -32,7 +32,7 @@
           </v-btn-toggle>
         </div>
 
-        <v-textarea box v-model="payload" disabled/>
+        <v-textarea box auto-grow readonly v-model="payload"/>
       </div>
 
       <!-- AccountOperation -->
@@ -47,9 +47,9 @@
         <v-textarea
           v-show="ShowRawOperationData"
           box
-          disabled
-          v-model="rawOperationData"
-          :rows="rawOperationDataLines"
+          readonly
+          :value ="ShowRawOperationData? rawOperationData:''"           
+          auto-grow
         />
       </div>
     </v-responsive>

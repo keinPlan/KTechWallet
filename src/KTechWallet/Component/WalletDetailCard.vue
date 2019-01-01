@@ -27,18 +27,19 @@
         type="Number"
       />
 
-      <v-text-field label="KeyType:" :value="this.Account.AccountData.KeyType" disabled/>
+      <v-text-field label="KeyType:" :value="this.Account.AccountData.KeyType" readonly/>
 
       <v-textarea
+     auto-grow
         label="AccountPublicKey:"
         :value="this.Account.AccountData.AccountPublicKey"
-        disabled
+        readonly         
         type="Number"
       />
       <v-text-field
         label="LastUpdate:"
         :value="this.Account.AccountData.LastUpdate"
-        disabled
+        readonly
         type="Number"
       />
     </v-card-text>
@@ -106,12 +107,12 @@ export default class WalletDetailCard extends Vue {
   Account!: KtlAccount | undefined;
   Balance: string = "xxx.xx";
   lastupdate: string = "";
-  autorenew_loading: boolean = false;
   AccountCheckSum: number = 0;
-  ShowAccountsDetails: boolean = false;
+  ShowAccountsDetails: boolean = true;
 
   PrivateKeyPassword: string = "";
   PrivateKey: string = "";
+
   constructor() {
     super();
     this.Account = store.AccountManager.GetAccountByName(this.AccountName);
@@ -129,7 +130,7 @@ export default class WalletDetailCard extends Vue {
     if (!this.Account) {
       return;
     }
-    this.autorenew_loading = true;
+   
     this.Account.AccountData.AccountPublicKey;
     this.Balance = "???.??";
 
@@ -140,8 +141,7 @@ export default class WalletDetailCard extends Vue {
       .then(value => {
         this.Balance = value ? value.balance.toString() : "";
       })
-      .catch(error => (this.Balance = error.toString()))
-      .finally(() => (this.autorenew_loading = false));
+      .catch(error => (this.Balance = error.toString()))     
   }
 
   ChangeAccNumber() {
