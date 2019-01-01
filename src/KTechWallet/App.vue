@@ -91,7 +91,9 @@ export default class App extends Vue {
   drawer: boolean = false;
   dark: boolean = true;
 
-  mounted() {}
+  mounted() {
+ 
+  }
 
   back() {
     this.$router.go(-1);
@@ -123,7 +125,7 @@ export default class App extends Vue {
   ExportWallet() {
     let data = store.AccountManager.Export();
     let contact = store.ContactsManager.Export();
-    data = JSON.stringify({ Accounts: data, Contact: contact } , null,4);
+    data = JSON.stringify({ Accounts: data, Contact: contact }, null, 4);
 
     var element = document.createElement("a");
     element.setAttribute(
@@ -139,6 +141,8 @@ export default class App extends Vue {
 
     document.body.removeChild(element);
   }
+
+ 
 }
 </script>
 

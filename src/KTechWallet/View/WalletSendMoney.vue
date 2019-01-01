@@ -1,5 +1,16 @@
 <template>
   <v-layout align-space-around justify-space-around wrap row>
+    <v-flex xs12 v-if="Label != ''">
+      <v-card  color="accent">
+        <v-card-title class="pb-0 mb-0">
+          <h2>InfoMessage:</h2>
+        </v-card-title>
+        <v-card-text class="pt-0 mt-0">
+          <v-textarea flat auto-grow rows="1" :value="Label" readonly/>
+        </v-card-text>
+      </v-card>
+    </v-flex>
+
     <!-- From: -->
     <v-flex xs12 md6>
       <v-card>
@@ -9,7 +20,7 @@
         <v-card-text>
           <v-select v-model="AccountName" :items="AccountNames" box label="Sender"></v-select>
           <v-layout row wrap>
-            <v-text-field v-model="Amount" label="Amount" type="number" prefix="$" required/>
+            <v-text-field v-model="Amount" label="Amount" type="number" prefix="$" required :disabled="LockInputs"/>
             <v-text-field v-model="Fee" label="Fee" type="number" prefix="$" required/>
           </v-layout>
         </v-card-text>
@@ -22,8 +33,8 @@
           <v-toolbar class="headline mb-0">To:
             <v-spacer/>
             <v-btn-toggle v-model="ToContact" mandatory>
-              <v-btn color="accent" flat :value="true">Contact</v-btn>
-              <v-btn color="accent" flat :value="false">Account</v-btn>
+              <v-btn color="accent" flat :value="true" :disabled="LockInputs">Contact</v-btn>
+              <v-btn color="accent" flat :value="false" :disabled="LockInputs">Account</v-btn>
             </v-btn-toggle>
           </v-toolbar>
         </v-responsive>
@@ -35,6 +46,7 @@
             :items="ContactNames"
             label="Select contact"
             @change="ContactChanged"
+            :disabled="LockInputs"
           ></v-combobox>
           <v-layout row wrap>
             <v-text-field
@@ -44,6 +56,7 @@
               placeholder="xxxxxxxx"
               required
               v-show="!ToContact"
+              :disabled="LockInputs"
             />
             <v-text-field
               style="width:50px"
@@ -54,6 +67,7 @@
               mask="##"
               required
               v-show="!ToContact"
+              :disabled="LockInputs"
             />
           </v-layout>
         </v-card-text>
@@ -66,25 +80,25 @@
           <v-toolbar>
             <h3 class="headline mb-0">Payload:</h3>
             <v-spacer/>
-            <v-btn icon color="accent" @click="PayloadAktivated=!PayloadAktivated">
+            <v-btn icon color="accent" @click="PayloadAktivated=!PayloadAktivated" :disabled="LockInputs">
               <v-icon>{{PayloadAktivated ? 'remove_circle':'add_circle'}}</v-icon>
             </v-btn>
           </v-toolbar>
         </v-responsive>
 
         <v-card-text v-show="PayloadAktivated">
-          <v-radio-group v-model="PayloadFormat" @change="TogglePayload" row label="PayloadFromat:">
+          <v-radio-group v-model="PayloadDisplay" @change="TogglePayload" row label="PayloadFromat:">
             <v-radio label="hex" value="hex"></v-radio>
             <v-radio label="ascii" value="ascii"></v-radio>
           </v-radio-group>
 
-          <v-radio-group row dense v-model="PayloadEncryption" label="PayloadEncryption:">
+          <v-radio-group row dense v-model="PayloadEncryption" label="PayloadEncryption:" :disabled="LockInputs">
             <v-radio label="None" value="None"></v-radio>
             <v-radio label="KTECH_TARGETPUBLICKEY" value="KTECH_TARGETPUBLICKEY"></v-radio>
             <!--  <v-radio label="Password" value="3"></v-radio> -->
           </v-radio-group>
 
-          <v-textarea box label="Payload:" v-model="Payload" :counter="PayloadMaxSize" auto-grow></v-textarea>
+          <v-textarea box label="Payload:" v-model="Payload" :counter="PayloadMaxSize" auto-grow :disabled="LockInputs"></v-textarea>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -137,12 +151,13 @@ export default class WalletSendMoney extends Vue {
   AccountNames: Array<string> = store.AccountManager.GetAccountNames();
   ContactNames: string[] = store.ContactsManager.GetAccountNames();
   PayloadAktivated: boolean = false;
-  PayloadFormat: string = "hex";
+  PayloadDisplay: string = "hex";
   PayloadEncryption: string = "None";
   PayloadMaxSize: number = 255 * 2;
   @Prop() AccountName!: string;
   ToContact: boolean = true;
   SelectedContact!: string;
+  Label: string = "";
 
   Amount: number = 0.0001;
   Fee: number = 0.0;
@@ -153,6 +168,11 @@ export default class WalletSendMoney extends Vue {
   Error: string = "";
   Processing: boolean = false;
 
+
+   
+  LockInputs:boolean=false;
+
+
   mounted() {
     if (this.$route.query) {
       let target = this.$route.query["target"] as string;
@@ -162,21 +182,27 @@ export default class WalletSendMoney extends Vue {
         this.TargetAccountNumberCheckSum = Number.parseInt(
           target.slice(target.indexOf("-"), target.length)
         );
+        this.LockInputs = true ;
+      }
+
+      let label = this.$route.query["label"] as string;
+      if (label) {
+        this.Label = label;
       }
 
       let amount = Number.parseFloat(this.$route.query["amount"] as string);
       if (amount) {
         this.Amount = amount;
       }
-      let payloadType = this.$route.query["payloadType"] as string;
+      let payloadType = this.$route.query["payloaddisplay"] as string;
       let payload = this.$route.query["payload"] as string;
 
       if (payload) {
         this.Payload = payload;
         this.PayloadAktivated = true;
-        this.PayloadFormat = "hex";
+        this.PayloadDisplay = "hex";
         if (payloadType === "ascii") {
-          this.PayloadFormat = "ascii";
+          this.PayloadDisplay = "ascii";
           this.TogglePayload();
         }
       }
@@ -277,7 +303,7 @@ export default class WalletSendMoney extends Vue {
   }
 
   TogglePayload(): void {
-    if (this.PayloadFormat === "hex") {
+    if (this.PayloadDisplay === "hex") {
       this.Payload = ktl.StringToHexString(this.Payload);
       this.PayloadMaxSize = 255 * 2;
     } else {
@@ -292,7 +318,7 @@ export default class WalletSendMoney extends Vue {
     }
     let hexString = "";
 
-    if (this.PayloadFormat !== "hex") {
+    if (this.PayloadDisplay !== "hex") {
       hexString = ktl.StringToHexString(this.Payload);
     } else {
       let len = this.Payload.length;

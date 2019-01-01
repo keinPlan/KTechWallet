@@ -6,8 +6,11 @@ import WalletView from "./View/WalletView.vue";
 import WalletDetailView from "./View/WalletDetailView.vue";
 import WalletCreateAccountView from "./View/WalletCreateAccountView.vue";
 import WalletSendMoney from "./View/WalletSendMoney.vue";
+import UriHandler from "./View/UriHandler.vue";
 import Contacts from "./View/Contacts.vue";
-import NavigationBar from "./View/NavigationBar.vue";
+import LoginForm from "./View/LoginForm.vue";
+
+
 import MenuWallet from "./Component/MenuWallet.vue";
 import config from "./View/Config.vue";
 //import AccountsView from "./View/AccountsView.vue"; PublicKeyCheck
@@ -66,12 +69,12 @@ export default new VueRouter({
         },
         {
             path: "/wallet/send/",
-            name: "walletsend",
+            name: "walletsend2",
             components: {
                 default: WalletSendMoney,
                 //navbar: NavigationBar
             }
-         
+
         },
         {
             path: "/wallet/createaccount",
@@ -95,6 +98,22 @@ export default new VueRouter({
             name: "Tools",
             components: {
                 default: Tools,
+                //navbar: NavigationBar
+            }
+        },
+        {
+            path: "/urihandler",
+            name: "UriHandler",
+            components: {
+                default: UriHandler,
+                //navbar: NavigationBar
+            }
+        },
+        {
+            path: "/login",
+            name: "login",
+            components: {
+                default: LoginForm,
                 //navbar: NavigationBar
             }
         },

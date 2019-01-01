@@ -1,4 +1,5 @@
 import { Hash, Kdf, Aes, eKeyTypes, EcCrypto } from './KtlCrypto';
+import { PascalPublicKey } from './PascalCoin/PascalCoin';
 
 export class KtlKeyStorage {
 
@@ -47,5 +48,10 @@ export class KtlKeyStorage {
 
     public ECDHDecrypt(keyType: eKeyTypes, password: string, data: Uint8Array, publicKey: Uint8Array): Uint8Array {
         return EcCrypto.ECDHDecrypt(keyType, this.UnPackKey(password), publicKey, data);
+    }
+
+    public GetPublicKey(keyType: eKeyTypes, password: string): PascalPublicKey {
+        let pk = this.UnPackKey(password);
+        return PascalPublicKey.CreateFromPrivateKey(keyType, pk);
     }
 }
