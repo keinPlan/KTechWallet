@@ -109,13 +109,22 @@ export default class App extends Vue {
 
     r.onloadend = (rr: any) => {
       //console.log(rr.target!.result);
-      store.AccountManager.Import(rr.target!.result);
+
+      let temp: { Accounts: string; Contact: string } = JSON.parse(
+        rr.target!.result
+      );
+
+      store.AccountManager.Import(temp.Accounts);
+      store.ContactsManager.Import(temp.Contact);
       this.$router.go(0);
     };
   }
 
   ExportWallet() {
     let data = store.AccountManager.Export();
+    let contact = store.ContactsManager.Export();
+    data = JSON.stringify({ Accounts: data, Contact: contact } , null,4);
+
     var element = document.createElement("a");
     element.setAttribute(
       "href",

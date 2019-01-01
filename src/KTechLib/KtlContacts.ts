@@ -52,7 +52,16 @@ export class KtlContactsManager {
         this.storage.Save(ACCOUNT_STORAGE_PREFIX + contact.ContactName, JSON.stringify(contact));
     }
 
+    public Export(): string {
+        return JSON.stringify(Array.from<IKtlContact>(this.contacts.values()));
+    }
 
+    public Import(data: string): void {
+        let array: IKtlContact[] = JSON.parse(data);
+        if (array) {
+            array.forEach((v) => this.Add(v));
+        }
+    }
 }
 
 export interface IKtlContact {
