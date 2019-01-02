@@ -89,11 +89,28 @@ import { readFileSync } from "fs";
 @Component
 export default class App extends Vue {
   drawer: boolean = false;
-  dark: boolean = true;
-
+  dark: boolean = true; 
   mounted() {
- 
+    if ("serviceWorker" in navigator) {
+    
+      window.addEventListener("load", function() {
+        navigator.serviceWorker.register("/sw.js", { scope: '/KTechWallet/' }).then(
+          function(registration) {
+            // Registration was successful
+            console.log(
+              "ServiceWorker registration successful with scope: ",
+              registration.scope
+            );
+          },
+          function(err) {
+            // registration failed :(
+            console.log("ServiceWorker registration failed: ", err);
+          }
+        );
+      });
+    } 
   }
+  
 
   back() {
     this.$router.go(-1);
@@ -141,8 +158,6 @@ export default class App extends Vue {
 
     document.body.removeChild(element);
   }
-
- 
 }
 </script>
 

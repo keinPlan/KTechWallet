@@ -1,6 +1,16 @@
+const fs = require('fs');
+
 module.exports = {
   configureWebpack: {
     devtool: 'source-map',
+  },
+
+  devServer: {
+    open: process.platform === 'darwin',
+    host: '0.0.0.0',
+    port: 8080, // CHANGE YOUR PORT HERE!
+    https: false
+
   },
 
   pages: {
@@ -21,7 +31,7 @@ module.exports = {
 
   },
 
-  baseUrl: process.env.BaseURL ? process.env.BaseURL :'/KTechWallet/',
+  baseUrl: process.env.BaseURL ? process.env.BaseURL : '/KTechWallet/',
   outputDir: undefined,
   assetsDir: undefined,
   runtimeCompiler: undefined,
