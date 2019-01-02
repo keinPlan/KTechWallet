@@ -89,12 +89,12 @@ import { readFileSync } from "fs";
 @Component
 export default class App extends Vue {
   drawer: boolean = false;
-  dark: boolean = true; 
+  dark: boolean = true;
   mounted() {
     if ("serviceWorker" in navigator) {
-    
       window.addEventListener("load", function() {
-        navigator.serviceWorker.register("/sw.js").then(
+        let path = document.location.origin + document.location.pathname;
+        navigator.serviceWorker.register(path + "sw.js").then(
           function(registration) {
             // Registration was successful
             console.log(
@@ -108,9 +108,8 @@ export default class App extends Vue {
           }
         );
       });
-    } 
+    }
   }
-  
 
   back() {
     this.$router.go(-1);
