@@ -48,11 +48,11 @@ self.addEventListener('fetch', function(event) {
               caches.open(CACHE_NAME)
                 .then(function(cache) {
                   cache.put(event.request, responseToCache);
-                });
+                }).catch(error=> console.log(error));
   
               return response;
             }
-          );
-        })
+          ).catch(error=> console.log(error));
+        }).catch(error=> console.log(error))
       );
   });
