@@ -1,4 +1,4 @@
-var CACHE_NAME = 'ktechwallet';
+var CACHE_NAME = 'ktechwallet-cache';
 var urlsToCache = [
   '/', 
 ];
