@@ -52,7 +52,7 @@
 
     <!-- TOOLBAR -->
     <v-toolbar app>
-      <v-btn v-if="deferredPrompt ? true:false" color="accent" @click="Install">
+      <v-btn icon v-if="deferredPrompt ? true:false" color="accent" @click="Install">
            <v-icon>cloud_download</v-icon>  
       </v-btn>
 
