@@ -8,16 +8,16 @@
     "test:debug": "node --inspect-brk ./node_modules/@vue/cli-service/bin/vue-cli-service.js test:unit --runInBand",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit --coverage",
-    "cordova":"set BaseURL=.& vue-cli-service build --dest=KTechWalletCordova/www/",
-    "cordova:android":   "cd KTechWalletCordova&cordova build android --release",
-    "cordova:windows":   "cd KTechWalletCordova&cordova build windows"
+    "cordova": "set BaseURL=.& vue-cli-service build --dest=KTechWalletCordova/www/",
+    "cordova:android": "cd KTechWalletCordova&cordova build android --release",
+    "cordova:windows": "cd KTechWalletCordova&cordova build windows"
   },
   "dependencies": {
     "@types/elliptic": "^6.4.0",
     "axios": "^0.18.0",
     "babel-plugin-transform-decorators": "^6.24.1",
     "basex-encoder": "0.0.3",
-    "elliptic": "^6.4.1",
+    "elliptic": "^6.4.1", 
     "mipher": "^1.1.5",
     "ts-jest": "^23.10.5",
     "vue": "^2.5.17",

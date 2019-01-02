@@ -52,7 +52,9 @@
 
     <!-- TOOLBAR -->
     <v-toolbar app>
-      <v-btn v-if="deferredPrompt ? true:false" color="accent" @click="Install">Install</v-btn>
+      <v-btn v-if="deferredPrompt ? true:false" color="accent" @click="Install">
+           <v-icon>cloud_download</v-icon>  
+      </v-btn>
 
       <v-spacer></v-spacer>
 
@@ -94,26 +96,7 @@ export default class App extends Vue {
   dark: boolean = true;
   deferredPrompt: any = null;
 
-  created() {
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function() {
-        let path = document.location.origin + document.location.pathname;
-        navigator.serviceWorker.register(path + "sw.js").then(
-          function(registration) {
-            // Registration was successful
-            console.log(
-              "ServiceWorker registration successful with scope: ",
-              registration.scope
-            );
-          },
-          function(err) {
-            // registration failed :(
-            console.log("ServiceWorker registration failed: ", err);
-          }
-        );
-      });
-    }
-
+  created() { 
     window.addEventListener("beforeinstallprompt", e => {
       // Prevent Chrome 67 and earlier from automatically showing the prompt
       e.preventDefault();

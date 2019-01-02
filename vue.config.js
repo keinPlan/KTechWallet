@@ -10,7 +10,6 @@ module.exports = {
     host: '0.0.0.0',
     port: 8080, // CHANGE YOUR PORT HERE!
     https: false
-
   },
 
   pages: {
@@ -30,6 +29,9 @@ module.exports = {
     },
 
   },
+  
+
+
 
   baseUrl: process.env.BaseURL ? process.env.BaseURL : '/KTechWallet/',
   outputDir: undefined,
@@ -37,5 +39,5 @@ module.exports = {
   runtimeCompiler: undefined,
   productionSourceMap: false,
   parallel: undefined,
-  css: undefined
+
 }

@@ -2,22 +2,35 @@
 <html lang="en">
 
 <head>
-  <!-- Global site tag (gtag.js) - Google Analytics -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131387395-1"></script>
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'UA-131387395-1');
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", function () {
+        let path = document.location.origin + document.location.pathname;
+        navigator.serviceWorker.register(path + "sw.js").then(
+          function (registration) {
+            // Registration was successful
+            console.log(
+              "ServiceWorker registration successful with scope: ",
+              registration.scope
+            );
+          },
+          function (err) {
+            // registration failed :(
+            console.log("ServiceWorker registration failed: ", err);
+          }
+        );
+      });
+    }
   </script>
 
-  <link rel="manifest" href="<%= BASE_URL %>manifest.json">
+  
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">
-  <link rel="icon" href="<%= BASE_URL %>128x128.png">
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:400,500,700,400italic|Material+Icons">
+  <link rel="manifest" href="<%= BASE_URL %>manifest.json">
+  <link rel="icon" href="<%= BASE_URL %>128x128.png">   
+  <link rel=stylesheet href="<%= BASE_URL %>material-icons-0.3.0/iconfont/material-icons.css">
+  <link rel=stylesheet href="<%= BASE_URL %>fonts/fonts.css">
   <title>KTechWallet</title>
 </head>
 
