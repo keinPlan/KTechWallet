@@ -94,7 +94,7 @@ export default class App extends Vue {
   dark: boolean = true;
   deferredPrompt: any = null;
 
-  crreated() {
+  created() {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function() {
         let path = document.location.origin + document.location.pathname;
