@@ -52,6 +52,10 @@
 
     <!-- TOOLBAR -->
     <v-toolbar app>
+      <v-btn  v-if="deferredPrompt" color="accent" @click="Install">
+        Install
+      </v-btn>
+
       <v-spacer></v-spacer>
 
       <v-btn icon to="/">
@@ -90,7 +94,9 @@ import { readFileSync } from "fs";
 export default class App extends Vue {
   drawer: boolean = false;
   dark: boolean = true;
-  mounted() {
+  deferredPrompt: any = null;
+
+  crreated() {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", function() {
         let path = document.location.origin + document.location.pathname;
@@ -109,6 +115,28 @@ export default class App extends Vue {
         );
       });
     }
+
+    window.addEventListener("beforeinstallprompt", e => {
+      // Prevent Chrome 67 and earlier from automatically showing the prompt
+      e.preventDefault();
+      console.log("beforeinstallprompt");
+      // Stash the event so it can be triggered later.
+      this.deferredPrompt = e;
+    });
+  }
+
+  Install() {
+    // Show the prompt
+    this.deferredPrompt.prompt();
+    // Wait for the user to respond to the prompt
+    this.deferredPrompt.userChoice.then((choiceResult: any) => {
+      if (choiceResult.outcome === "accepted") {
+        console.log("User accepted the A2HS prompt");
+      } else {
+        console.log("User dismissed the A2HS prompt");
+      }
+      this.deferredPrompt = null;
+    });
   }
 
   back() {
