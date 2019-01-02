@@ -1,29 +1,16 @@
 <!DOCTYPE html>
 <html lang="en">
 
-<head>
-  <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", function () {
-        let path = document.location.origin + document.location.pathname;
-        navigator.serviceWorker.register(path + "sw.js").then(
-          function (registration) {
-            // Registration was successful
-            console.log(
-              "ServiceWorker registration successful with scope: ",
-              registration.scope
-            );
-          },
-          function (err) {
-            // registration failed :(
-            console.log("ServiceWorker registration failed: ", err);
-          }
-        );
-      });
-    }
-  </script>
+<head> 
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131387395-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() { dataLayer.push(arguments); }
+      gtag('js', new Date());
+      gtag('config', 'UA-131387395-1');
+    </script>
 
-  
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width,initial-scale=1.0">

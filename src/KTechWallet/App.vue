@@ -52,10 +52,6 @@
 
     <!-- TOOLBAR -->
     <v-toolbar app>
-      <v-btn icon v-if="deferredPrompt ? true:false" color="accent" @click="Install">
-           <v-icon>cloud_download</v-icon>  
-      </v-btn>
-
       <v-spacer></v-spacer>
 
       <v-btn icon to="/">
@@ -96,29 +92,7 @@ export default class App extends Vue {
   dark: boolean = true;
   deferredPrompt: any = null;
 
-  created() { 
-    window.addEventListener("beforeinstallprompt", e => {
-      // Prevent Chrome 67 and earlier from automatically showing the prompt
-      e.preventDefault();
-      console.log("beforeinstallprompt");
-      // Stash the event so it can be triggered later.
-      this.deferredPrompt = e;
-    });
-  }
-
-  Install() {
-    // Show the prompt
-    this.deferredPrompt.prompt();
-    // Wait for the user to respond to the prompt
-    this.deferredPrompt.userChoice.then((choiceResult: any) => {
-      if (choiceResult.outcome === "accepted") {
-        console.log("User accepted the A2HS prompt");
-      } else {
-        console.log("User dismissed the A2HS prompt");
-      }
-      this.deferredPrompt = null;
-    });
-  }
+  created() {}
 
   back() {
     this.$router.go(-1);
