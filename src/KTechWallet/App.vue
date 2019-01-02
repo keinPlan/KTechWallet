@@ -52,9 +52,7 @@
 
     <!-- TOOLBAR -->
     <v-toolbar app>
-      <v-btn  v-if="deferredPrompt" color="accent" @click="Install">
-        Install
-      </v-btn>
+      <v-btn v-if="deferredPrompt ? true:false" color="accent" @click="Install">Install</v-btn>
 
       <v-spacer></v-spacer>
 
