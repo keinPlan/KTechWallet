@@ -3,6 +3,7 @@ import App from "./App.vue";
 import Vuetify from "vuetify";
 import router from "./router";
 import "./main.styl";
+import "./Cordova";
 
 Vue.use(Vuetify, {
     iconfont: "md",

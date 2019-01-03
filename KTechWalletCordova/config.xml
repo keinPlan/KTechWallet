@@ -1,15 +1,16 @@
 <?xml version='1.0' encoding='utf-8'?>
-<widget id="io.cordova.ktechwallet" version="0.0.1" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
+<widget id="com.ktech.wallet" version="1.0.0" xmlns="http://www.w3.org/ns/widgets" xmlns:cdv="http://cordova.apache.org/ns/1.0">
     <name>KTechWallet</name>
     <description>
-        PasclCoin Wallet
+        A sample PasclCoin Wallet
     </description>
     <author email="keinplan1337@gmail.com" href="https://github.com/keinPlan/KTechWallet">
-        keinplan1337
+        keinPlan1337
     </author>
     <content src="index.html" />
     <plugin name="cordova-plugin-whitelist" spec="1" />
     <access origin="*" />
+    <access launch-external="yes" origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
     <allow-intent href="tel:*" />
@@ -17,12 +18,16 @@
     <allow-intent href="mailto:*" />
     <allow-intent href="geo:*" />
     <platform name="android">
-        <allow-intent href="market:*" />
+        <icon src="www/512x512.png" />
+        <splash src="www/512x512.png" />
     </platform>
     <platform name="ios">
         <allow-intent href="itms:*" />
         <allow-intent href="itms-apps:*" />
     </platform>
-    <engine name="windows" spec="^6.0.1" />
+    <plugin name="cordova-plugin-urlhandler" spec="^0.7.2">
+        <variable name="URL_SCHEME" value="web+pasc" />
+    </plugin>
+    <preference name="windows-target-version" value="10.0" />
     <engine name="android" spec="^7.1.4" />
 </widget>

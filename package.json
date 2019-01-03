@@ -8,7 +8,7 @@
     "test:debug": "node --inspect-brk ./node_modules/@vue/cli-service/bin/vue-cli-service.js test:unit --runInBand",
     "lint": "vue-cli-service lint",
     "test:unit": "vue-cli-service test:unit --coverage",
-    "cordova": "set BaseURL=.& vue-cli-service build --dest=KTechWalletCordova/www/",
+    "cordova": "set BaseURL=.& vue-cli-service build --mode=cordova --dest=KTechWalletCordova/www/",
     "cordova:android": "cd KTechWalletCordova&cordova build android --release",
     "cordova:windows": "cd KTechWalletCordova&cordova build windows"
   },

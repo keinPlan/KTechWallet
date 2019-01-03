@@ -8,7 +8,11 @@
   },
   "installed_plugins": {
     "cordova-plugin-whitelist": {
-      "PACKAGE_NAME": "io.cordova.ktechwallet"
+      "PACKAGE_NAME": "com.ktech.wallet"
+    },
+    "cordova-plugin-urlhandler": {
+      "URL_SCHEME": "web+pasc",
+      "PACKAGE_NAME": "com.ktech.wallet"
     }
   },
   "dependent_plugins": {}

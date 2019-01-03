@@ -131,7 +131,7 @@ public class WhitelistPlugin extends CordovaPlugin {
     public Boolean shouldOpenExternalUrl(String url) {
         if (allowedIntents.isUrlWhiteListed(url)) {
             return true;
-        }
+        }    
         return null; // Default policy
     }
 

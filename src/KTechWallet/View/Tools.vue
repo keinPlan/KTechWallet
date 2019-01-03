@@ -1,23 +1,27 @@
 <template>
   <div class="md-layout md-gutter">
     <PublicKeyCheck class="md-layout-item md-size-100"/>
-    <InvoiceBuilder/>
+    <UriBuilder/>
     <v-btn @click="test10">test</v-btn>
+    <v-btn href="web+pasc://test">test</v-btn>
   </div>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Provide, Vue } from "vue-property-decorator";
 import PublicKeyCheck from "@/KTechWallet/Component/PublicKeyCheck.vue";
-import InvoiceBuilder from "@/KTechWallet/Component/InvoiceBuilder.vue";
+import UriBuilder from "@/KTechWallet/Component/UriBuilder.vue";
 import store from "../store/store";
 import * as ktl from "@/KTechLib/KTechLib";
 import { Uint8ArrayFromHex } from "@/KTechLib/KTechLib";
 
 @Component({
-  components: { PublicKeyCheck ,InvoiceBuilder}
+  components: { PublicKeyCheck ,UriBuilder}
 })
 export default class Tools extends Vue {
+  created(){
+    console.log( JSON.stringify( window.location));
+  }
   async test10() {
 
   }

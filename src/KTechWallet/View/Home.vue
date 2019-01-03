@@ -10,18 +10,7 @@
         <br>
         <br>
 
-        <v-btn
-          block
-          href="#/wallet/send/?target=606554-60&amount=0.1&payload=646f6e6174696f6e732077656c636f6d65203d50&payloaddisplay=ascii"
-        >invoicetest</v-btn>
-
         <v-btn @click="RegisterHandler" block>RegisterUriHandler (web+pasc:)</v-btn>
-        <v-btn :href="testloginLink">web+pasc:action=login</v-btn>
-        <v-btn
-          href="web+pasc:action=pay&target=606554-60&label=just a test msg%0Atest test test%0Atest test test%0Atest test test%0Atest test test&amount=0.1&payload=646f6e6174696f6e732077656c636f6d65203d50&payloaddisplay=ascii"
-        >web+pasc:action=pay</v-btn>
-
-        
       </v-card-text>
     </v-card>
   </div>
