@@ -1,7 +1,7 @@
 <template>
   <v-layout align-space-around justify-space-around wrap row>
     <v-flex xs12 v-if="Label != ''">
-      <v-card  color="accent">
+      <v-card color="accent">
         <v-card-title class="pb-0 mb-0">
           <h2>InfoMessage:</h2>
         </v-card-title>
@@ -20,7 +20,14 @@
         <v-card-text>
           <v-select v-model="AccountName" :items="AccountNames" box label="Sender"></v-select>
           <v-layout row wrap>
-            <v-text-field v-model="Amount" label="Amount" type="number" prefix="$" required :disabled="LockInputs"/>
+            <v-text-field
+              v-model="Amount"
+              label="Amount"
+              type="number"
+              prefix="$"
+              required
+              :disabled="LockInputs"
+            />
             <v-text-field v-model="Fee" label="Fee" type="number" prefix="$" required/>
           </v-layout>
         </v-card-text>
@@ -80,25 +87,48 @@
           <v-toolbar>
             <h3 class="headline mb-0">Payload:</h3>
             <v-spacer/>
-            <v-btn icon color="accent" @click="PayloadAktivated=!PayloadAktivated" :disabled="LockInputs">
+            <v-btn
+              icon
+              color="accent"
+              @click="PayloadAktivated=!PayloadAktivated"
+              :disabled="LockInputs"
+            >
               <v-icon>{{PayloadAktivated ? 'remove_circle':'add_circle'}}</v-icon>
             </v-btn>
           </v-toolbar>
         </v-responsive>
 
         <v-card-text v-show="PayloadAktivated">
-          <v-radio-group v-model="PayloadDisplay" @change="TogglePayload" row label="PayloadFromat:">
+          <v-radio-group
+            v-model="PayloadDisplay"
+            @change="TogglePayload"
+            row
+            label="PayloadFromat:"
+          >
             <v-radio label="hex" value="hex"></v-radio>
             <v-radio label="ascii" value="ascii"></v-radio>
           </v-radio-group>
 
-          <v-radio-group row dense v-model="PayloadEncryption" label="PayloadEncryption:" :disabled="LockInputs">
+          <v-radio-group
+            row
+            dense
+            v-model="PayloadEncryption"
+            label="PayloadEncryption:"
+            :disabled="LockInputs"
+          >
             <v-radio label="None" value="None"></v-radio>
             <v-radio label="KTECH_TARGETPUBLICKEY" value="KTECH_TARGETPUBLICKEY"></v-radio>
             <!--  <v-radio label="Password" value="3"></v-radio> -->
           </v-radio-group>
 
-          <v-textarea box label="Payload:" v-model="Payload" :counter="PayloadMaxSize" auto-grow :disabled="LockInputs"></v-textarea>
+          <v-textarea
+            box
+            label="Payload:"
+            v-model="Payload"
+            :counter="PayloadMaxSize"
+            auto-grow
+            :disabled="LockInputs"
+          ></v-textarea>
         </v-card-text>
       </v-card>
     </v-flex>
@@ -116,7 +146,10 @@
             @click:append="showPassword = !showPassword"
             required
           />
-          <v-alert :value="this.Error.length > 0" type="error">{{Error}}</v-alert>
+          <v-alert :value="this.sendresult" type="success">Sending was sucessful !!
+            <v-textarea v-model="this.sendresult" auto-grow readonly/>
+          </v-alert>
+          <v-alert :value="this.errorMsg" type="error">{{errorMsg}}</v-alert>
           <v-btn block color="accent" :loading="Processing" @click="OnSend">Send</v-btn>
         </v-card-text>
       </v-card>
@@ -165,14 +198,13 @@ export default class WalletSendMoney extends Vue {
   TargetAccountNumberCheckSum!: number;
   Payload: string = "";
   Password: string = "";
-  Error: string = "";
+
+  LockInputs: boolean = false;
+
   Processing: boolean = false;
-
-
-   
-  LockInputs:boolean=false;
-
-
+  errorMsg!: string ;
+  sendresult!: string ;
+  
   mounted() {
     if (this.$route.query) {
       let target = this.$route.query["target"] as string;
@@ -182,7 +214,7 @@ export default class WalletSendMoney extends Vue {
         this.TargetAccountNumberCheckSum = Number.parseInt(
           target.slice(target.indexOf("-"), target.length)
         );
-        this.LockInputs = true ;
+        this.LockInputs = true;
       }
 
       let label = this.$route.query["label"] as string;
@@ -212,24 +244,25 @@ export default class WalletSendMoney extends Vue {
   async OnSend() {
     try {
       // disable button
+      this.sendresult = "";
       this.Processing = true;
-      this.Error = "";
+      this.errorMsg = "";
 
       if (this.ToContact) {
         this.ContactChanged(); // force accnumber accchecksum update
-        if (this.Error != "") {
+        if (this.errorMsg != "") {
           return;
         }
       }
 
       if (this.Amount < 0.0001) {
-        this.Error = "min amount to send 0.0001";
+        this.errorMsg = "min amount to send 0.0001";
         return;
       }
 
       let sender = store.AccountManager.GetAccountByName(this.AccountName);
       if (sender == null) {
-        this.Error = "No Wallet found with name: " + this.AccountName;
+        this.errorMsg = "No Wallet found with name: " + this.AccountName;
         return;
       }
 
@@ -238,15 +271,15 @@ export default class WalletSendMoney extends Vue {
       await new RpcGetAccount(sender.AccountData.AccountNumber)
         .Execute(store.WalletConfig.RpcServer)
         .then(v => (accountDataFromBlockChain = v))
-        .catch(error => (this.Error = JSON.stringify(error)));
+        .catch(error => (this.errorMsg = JSON.stringify(error)));
 
-      if (accountDataFromBlockChain == null || this.Error != "") {
+      if (accountDataFromBlockChain == null || this.errorMsg != "") {
         return;
       }
 
       // check balance
       if (accountDataFromBlockChain!.balance < this.Amount + this.Fee) {
-        this.Error = "Account balance to low";
+        this.errorMsg = "Account balance to low";
         return;
       }
 
@@ -254,7 +287,7 @@ export default class WalletSendMoney extends Vue {
       let checksum = CalcAccountChecksum(this.TargetAccountNumber);
 
       if (this.TargetAccountNumberCheckSum.toString() !== checksum.toString()) {
-        this.Error =
+        this.errorMsg =
           "TargetAccount checksum NOK!!" +
           this.TargetAccountNumberCheckSum +
           "  " +
@@ -285,18 +318,19 @@ export default class WalletSendMoney extends Vue {
 
       var sendop = new RpcExecuteOperations("01000000" + Uint8ArrayToHex(data));
 
+    
       await sendop.Execute(store.WalletConfig.RpcServer).then(v => {
-        if (v[0].valid === undefined && v[0].opblock) {
-          alert("Sending was OK !!!");
+        if (v[0].opblock) {
+          this.sendresult =JSON.stringify(v[0], null, 1);
         } else {
-          this.Error = v[0].errors;
+          this.errorMsg = v[0].errors;
         }
       });
-
+    
       // send to rpc
     } catch (error) {
       console.log(error);
-      this.Error = JSON.stringify(error);
+      this.errorMsg = JSON.stringify(error);
     } finally {
       this.Processing = false;
     }
@@ -380,11 +414,11 @@ export default class WalletSendMoney extends Vue {
   ContactChanged() {
     let contract = store.ContactsManager.GetAccountByName(this.SelectedContact);
     if (contract) {
-      this.Error = "";
+      this.errorMsg = "";
       this.TargetAccountNumber = contract.ContactAccountNumber;
       this.TargetAccountNumberCheckSum = contract.ContactAccountNumberCheckSum;
     } else {
-      this.Error = "selected account not valid";
+      this.errorMsg = "selected account not valid";
     }
   }
 }
