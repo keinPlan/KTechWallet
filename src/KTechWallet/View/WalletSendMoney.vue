@@ -202,9 +202,9 @@ export default class WalletSendMoney extends Vue {
   LockInputs: boolean = false;
 
   Processing: boolean = false;
-  errorMsg!: string ;
-  sendresult!: string ;
-  
+  errorMsg!: string;
+  sendresult!: string;
+
   mounted() {
     if (this.$route.query) {
       let target = this.$route.query["target"] as string;
@@ -318,16 +318,16 @@ export default class WalletSendMoney extends Vue {
 
       var sendop = new RpcExecuteOperations("01000000" + Uint8ArrayToHex(data));
 
-    
       await sendop.Execute(store.WalletConfig.RpcServer).then(v => {
-        if (v[0].opblock) {
-          this.sendresult =JSON.stringify(v[0], null, 1);
+        if (v[0] && !v[0].errors && v[0].valid !== false) {
+          this.sendresult = JSON.stringify(v[0], null, 1);
         } else {
-          this.errorMsg = v[0].errors;
+          this.errorMsg = "ERROR: ";
+          this.errorMsg += v[0].errors
+            ? v[0].errors
+            : JSON.stringify(v[0], null, 1);
         }
       });
-    
-      // send to rpc
     } catch (error) {
       console.log(error);
       this.errorMsg = JSON.stringify(error);
