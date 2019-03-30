@@ -3,7 +3,8 @@
 
 <head>
   <script src="https://apis.google.com/js/api.js"></script>
-  <% if (process.env.USE_GOOGLE_ANALYTICS == 1) { %>
+ 
+  <% if (process.env.VUE_APP_GOOGLE_ANALYTICS == 1) { %>
   <!-- Global site tag (gtag.js) - Google Analytics -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=UA-131387395-1"></script>
   <script>
@@ -13,7 +14,7 @@
     gtag('config', 'UA-131387395-1');
   </script>
   <% } %>  
-  <% if (process.env.USE_SERVICEWORKER == 1) { %>
+  <% if (process.env.VUE_APP_SERVICEWORKER == 1) { %>
   <script type="text/javascript">
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function () {
@@ -44,7 +45,7 @@
   <div id="app"></div>
 
   
-  <% if (process.env.IS_CORDOVA=='1') { %>
+  <% if (process.env.VUE_APP_CORDOVA=='1') { %>
     <!-- CORDOVA-->
     <script type="text/javascript" src="cordova.js"></script>
   <% } %>
