@@ -48,13 +48,17 @@ export default new VueRouter({
                     path: "/WalletView",
                     component: WalletView
                 }, {
-                    path: "/WalletView/:WalletName",
+                    path: "/WalletView/info/:WalletName",
                     name:"walletInfo",
                     component: WalletDetailView,
                     props: true
                 }, {
                     name:"walletSend",
                     path: "/WalletView/send/:WalletName",
+                    component: WalletSendMoney,
+                    props: true
+                }, {
+                    path: "/WalletView/send",
                     component: WalletSendMoney,
                     props: true
                 }

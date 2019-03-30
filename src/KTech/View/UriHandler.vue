@@ -65,7 +65,7 @@ export default class UriHandler extends Vue {
       }
 
       if (this.uriParameterMap.get("action") === "pay") {
-        let link = "/WalletView/send/x?";
+        let link = "/WalletView/send/?";
         let data: string = "";
         if (this.uriParameterMap.get("amount")) {
           data += "amount=" + this.uriParameterMap.get("amount") + "&";
