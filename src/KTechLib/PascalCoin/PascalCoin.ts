@@ -13,7 +13,13 @@ export class PascalPublicKey {
     ) {
         if (!hash) {
             this.hash = this.CalcHash();
-        } else { this.hash = hash; }
+        } else {
+            this.hash = hash;
+            let hash2 = this.CalcHash();
+            if (this.hash.every((v, i) => v === hash2[i])) {
+                throw "expected Hash != hash";
+            }
+        }
     }
 
     public static CreateFromBase58Key(address: string): PascalPublicKey | null {
@@ -97,10 +103,7 @@ export class PascalPublicKey {
         return Hash.SHA256(writer.ToArray()).slice(0, 4);
     }
 
-    public IsValid(): boolean {
-        let hash = this.CalcHash();
-        return this.hash.every((v, i) => v === hash[i]);
-    }
+
 }
 
 

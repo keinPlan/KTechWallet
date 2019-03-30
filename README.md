@@ -1,6 +1,4 @@
 # KTechWallet
-basic pascalcoin web/android wallet
+basic pascalcoin web wallet
 
-**APK:** https://github.com/keinPlan/KTechWallet/releases
-
-**DemoPage:** https://keinplan.github.io/KTechWallet/
+**DemoPage:** https://ktechwallet.firebaseapp.com/

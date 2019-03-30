@@ -15,14 +15,14 @@ module.exports = {
   pages: {
     index: {
       // entry for the page
-      entry: 'src/KTechWallet/main.ts',
+      entry: 'src/KTech/main.ts',
       // the source template
       template: 'public/index.html',
       // output as dist/index.html
       filename: 'index.html',
       // when using title option,
       // template title tag needs to be <title><%= htmlWebpackPlugin.options.title %></title>
-      title: 'KTechWallet',
+      title: 'KTech',
       // chunks to include on this page, by default includes
       // extracted common chunks and vendor chunks.
       chunks: ['chunk-vendors', 'chunk-common', 'index']
@@ -30,10 +30,9 @@ module.exports = {
 
   },
   
+ 
 
-
-
-  baseUrl: process.env.BaseURL ? process.env.BaseURL : '/KTechWallet/',
+  baseUrl: process.env.BaseURL ? process.env.BaseURL : '.',
   outputDir: undefined,
   assetsDir: undefined,
   runtimeCompiler: undefined,

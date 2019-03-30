@@ -1,26 +1,28 @@
-﻿import { IKtlStorage, KtlStorageWindowLocalStorage } from "./KtlStorage";
+﻿import { IKtlStorage } from "./KtlStorage";
 
-const ACCOUNT_STORAGE_PREFIX: string = "#CONTACTS_";
-const ACCOUNT_MANAGER_Storage: string = "#CONTACTSMStorage";
+const CONTACTS_MANAGER_STORAGE_NAME: string = "#ContactsManager";
 
 export class KtlContactsManager {
-    private storage: IKtlStorage = new KtlStorageWindowLocalStorage();
+    private storage: IKtlStorage;
     private contacts: Map<string, IKtlContact> = new Map<string, IKtlContact>();
 
-    constructor() {
-        let data = this.storage.Load(ACCOUNT_MANAGER_Storage);
-        if (data) {
-            let contactsNames: Array<string> = JSON.parse(data);
+    private constructor(storage: IKtlStorage) {
+        this.storage = storage;
+    }
 
-            contactsNames.forEach((value) => {
-                let contactdata = this.storage.Load(ACCOUNT_STORAGE_PREFIX + value);
-                if (contactdata) {
-                    this.contacts.set(value, <IKtlContact>JSON.parse(contactdata));
-                }
-            });
-        } else {
+    public static Create(storage: IKtlStorage): Promise<KtlContactsManager> {
+        let temp: KtlContactsManager = new KtlContactsManager(storage);
+        return temp.Init().then(() => temp);
+    }
+    private async Init(): Promise<void> {
+        let data: string = await this.storage.Load(CONTACTS_MANAGER_STORAGE_NAME);
+
+        if (!data) {
             console.log("no stored contacts found ");
+            return;
         }
+
+        this.Import(data, false);
     }
 
     public GetAccountNames(): Array<string> {
@@ -31,35 +33,32 @@ export class KtlContactsManager {
         return this.contacts.get(name);
     }
 
-    public Add(contact: IKtlContact): void {
+    public Add(contact: IKtlContact, save: boolean = true): void {
         this.contacts.set(contact.ContactName, contact);
-
-        this.SaveKeys();
-        this.SaveContact(contact);
+        if (save) { this.Save(); }
     }
 
     public Delete(name: string): void {
         this.contacts.delete(name);
-        this.storage.Save(ACCOUNT_STORAGE_PREFIX + name, "");
-        this.SaveKeys();
+        this.Save();
     }
 
-    private SaveKeys(): void {
-        this.storage.Save(ACCOUNT_MANAGER_Storage, JSON.stringify(this.GetAccountNames()));
-    }
-
-    private SaveContact(contact: IKtlContact): void {
-        this.storage.Save(ACCOUNT_STORAGE_PREFIX + contact.ContactName, JSON.stringify(contact));
+    public Save(): void {
+        console.log("KtlContactsManager.Save");
+        this.storage.Save(CONTACTS_MANAGER_STORAGE_NAME, this.Export());
     }
 
     public Export(): string {
         return JSON.stringify(Array.from<IKtlContact>(this.contacts.values()));
     }
 
-    public Import(data: string): void {
+    public Import(data: string, save: boolean = true): void {
         let array: IKtlContact[] = JSON.parse(data);
         if (array) {
-            array.forEach((v) => this.Add(v));
+            array.forEach((v) => this.Add(v, false));
+        }
+        if (save) {
+            this.Save();
         }
     }
 }

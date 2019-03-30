@@ -10,6 +10,9 @@ export abstract class RpcRequest {
         return new Promise((resolve, reject) => {
             axios.post(server, JSON.stringify(request)).then((response) => {
                 console.log(response);
+                if (response.data.error) {
+                    reject(response.data.error);
+                }
                 resolve(response.data.result as T);
             }, (err) => {
                 reject(err);
@@ -184,17 +187,17 @@ export class RpcOperationsInfo extends RpcRequest {
 }
 
 export interface ISignMessageResponse {
-    digest : string;
-    enc_pubkey : string;
+    digest: string;
+    enc_pubkey: string;
     signature: string;
 }
 
 export class RpcSignMessage extends RpcRequest {
-    constructor(digest : string, b58_pubkey :string) {
+    constructor(digest: string, b58_pubkey: string) {
         super();
 
         this.method = "signmessage";
-        this.params = { digest ,b58_pubkey };
+        this.params = { digest, b58_pubkey };
     }
 
     public Execute(server: string = "http://localhost:4003"): Promise<ISignMessageResponse> {
@@ -203,11 +206,11 @@ export class RpcSignMessage extends RpcRequest {
 }
 
 export class RpcVerifySign extends RpcRequest {
-    constructor(digest : string, b58_pubkey :string ,signature:string) {
+    constructor(digest: string, b58_pubkey: string, signature: string) {
         super();
 
         this.method = "verifysign";
-        this.params = { digest ,b58_pubkey ,signature};
+        this.params = { digest, b58_pubkey, signature };
     }
 
     public Execute(server: string = "http://localhost:4003"): Promise<ISignMessageResponse> {

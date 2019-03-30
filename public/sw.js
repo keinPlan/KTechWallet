@@ -1,5 +1,5 @@
 var staticCacheName = 'pages-cache-v3';
-var urlsToCache = [    '/'  ];
+var urlsToCache = ['/'];
 
 self.addEventListener('activate', event => {
     console.log('Activating new service worker...');
@@ -17,10 +17,10 @@ self.addEventListener('activate', event => {
             );
         }),
         caches.open(staticCacheName)
-        .then(function(cache) {
-          console.log('Opened cache');
-          return cache.addAll(urlsToCache);
-        })
+            .then(function (cache) {
+                console.log('Opened cache');
+                return cache.addAll(urlsToCache);
+            })
 
     );
 });

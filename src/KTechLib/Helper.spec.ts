@@ -36,7 +36,7 @@ it("BinaryReaderWriter ReadWriteunit32", () => {
 
 it("BinaryReaderWriter ReadWriteunit64", () => {
     let rw = new helper.BinaryReaderWriter();
-    
+
     rw.AddUInt64(0x1FFFFFffffffff);
     rw.index = 0;
     expect(rw.ReadUInt64()).toBe(0x1FFFFFffffffff);
@@ -51,11 +51,11 @@ it("BinaryReaderWriter ReadWriteunit64", () => {
     rw.index = 0;
     expect(rw.ReadUInt64()).toBe(0x12345678abcdef);
 
-    expect( ()=>rw.AddUInt64(0x1FFFFFffffffff+1)).toThrowError("number to big to handle");
+    expect(() => rw.AddUInt64(0x1FFFFFffffffff + 1)).toThrowError("number to big to handle");
     rw.index = 0;
     rw.AddBytes(new Uint8Array(8).fill(0xff));
     rw.index = 0;
-    expect(()=>rw.ReadUInt64()).toThrowError("number to big to handle");
+    expect(() => rw.ReadUInt64()).toThrowError("number to big to handle");
 });
 
 

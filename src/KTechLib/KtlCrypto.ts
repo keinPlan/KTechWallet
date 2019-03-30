@@ -10,6 +10,12 @@ export enum eKeyTypes {
     SECT283K1 = "d902", // 729
 }
 
+export class RNG {
+    public static RngBytes(count: number): Uint8Array {
+        return new mipher.Random().get(count);
+    }
+}
+
 export class EcCrypto {
 
     public static NewKeyPair(keyType: eKeyTypes): { publicX: Uint8Array, publicY: Uint8Array, privateP: Uint8Array } {
@@ -19,9 +25,9 @@ export class EcCrypto {
 
         let x: Uint8Array = keypair.getPublic().getX().toArray();
         let y: Uint8Array = keypair.getPublic().getY().toArray();
-        let p =(keypair.getPrivate() as any).toArray();
- 
-        return {publicX :x , publicY :y , privateP :new Uint8Array(p)};
+        let p = (keypair.getPrivate() as any).toArray();
+
+        return { publicX: x, publicY: y, privateP: new Uint8Array(p) };
     }
 
     public static GetPublicKey_Raw(keyType: eKeyTypes, privatePoint: Uint8Array): { x: Uint8Array, y: Uint8Array } {
@@ -170,7 +176,6 @@ export class Aes {
 
     public static Decrypt_AES(key: Uint8Array, data: Uint8Array): Uint8Array {
         let aes: mipher.AES_CBC_PKCS7 = new mipher.AES_CBC_PKCS7();
-        data = new Uint8Array(data);
         return aes.decrypt(key, data, Hash.SHA256(key));
     }
 }

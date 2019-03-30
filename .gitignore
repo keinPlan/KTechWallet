@@ -2,9 +2,6 @@
 node_modules
 /dist
 
-/tests/e2e/videos/
-/tests/e2e/screenshots/
-
 # local env files
 .env.local
 .env.*.local
@@ -22,8 +19,4 @@ yarn-error.log*
 *.njsproj
 *.sln
 *.sw*
-/coverage
-/KTechWalletCordova/platforms
-/KTechWalletCordova/www
-/KTechWalletCordova/www1
-
+/KTechWalletCordova/

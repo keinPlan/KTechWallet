@@ -1,9 +1,9 @@
 {
   "name": "KTechWallet",
   "short_name": "Wallet",
-  "start_url": "/KTechWallet/#/wallet",
+  "start_url": "/#/wallet",
   "display": "standalone",
-  "scope":"/KTechWallet/",
+  "scope":"/",
   "background_color": "#000000",
   "description": "A simply PasclCoin Wallet",
   "icons": [{
@@ -18,6 +18,5 @@
     "src": "512x512.png",
     "sizes": "512x512",
     "type": "image/png"
-  }]
- 
+  }] 
 }
